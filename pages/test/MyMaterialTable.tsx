@@ -2,8 +2,8 @@ import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
 import { ReactElement } from "react";
 
-import { MaterialTableIcon } from "../components/MaterialTableIcon";
-const count = (): ReactElement => {
+import { MaterialTableIcon } from "../../components/MaterialTableIcon";
+const MyMaterialTable = (): ReactElement => {
     const [messgae, setMessgae] = useState();
     useEffect(() => {
         const callApi = async () => {
@@ -34,4 +34,4 @@ const count = (): ReactElement => {
     );
 };
 
-export default count;
+export default MyMaterialTable;

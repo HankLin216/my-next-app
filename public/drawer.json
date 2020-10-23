@@ -1,0 +1,23 @@
+[
+    {
+        "Label": "Item1",
+        "to": "/Item1"
+    },
+    {
+        "Label": "Item2",
+        "to": "Item2"
+    },
+    {
+        "Label": "Item3",
+        "subList": [
+            {
+                "Label": "subItem1",
+                "to": "/Item3/subItem1"
+            },
+            {
+                "Label": "subItem2",
+                "to": "/Item3/subItem2"
+            }
+        ]
+    }
+]

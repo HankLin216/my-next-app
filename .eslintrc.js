@@ -47,6 +47,8 @@ module.exports = {
                 specialLink: ["hrefLeft", "hrefRight"],
                 aspects: ["invalidHref", "preferButton"]
             }
-        ]
+        ],
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-unused-vars": "warn"
     }
 };

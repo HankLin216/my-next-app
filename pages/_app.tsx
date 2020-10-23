@@ -1,8 +1,25 @@
-// import App from "next/app";
+//styles
+import "../styles/globals.css";
+
+//theme
+import { ThemeProvider } from "@material-ui/core/styles";
 import type { AppProps /*, AppContext */ } from "next/app";
 import { ReactElement } from "react";
-function MyApp({ Component, pageProps }: AppProps): ReactElement {
-    return <Component {...pageProps} />;
+
+//custom components
+import Layout from "../components/Layout";
+//redux
+import { wrapper } from "../store/index";
+import theme from "../styles/theme";
+
+function WrappedApp({ Component, pageProps }: AppProps): ReactElement {
+    return (
+        <ThemeProvider theme={theme}>
+            <Layout>
+                <Component {...pageProps} />
+            </Layout>
+        </ThemeProvider>
+    );
 }
 
 // Only uncomment this method if you have blocking data requirements for
@@ -17,4 +34,4 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
 //   return { ...appProps }
 // }
 
-export default MyApp;
+export default wrapper.withRedux(WrappedApp);
