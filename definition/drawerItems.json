@@ -5,10 +5,11 @@
     },
     {
         "Label": "Item2",
-        "to": "Item2"
+        "to": "/Item2"
     },
     {
         "Label": "Item3",
+        "open": "fasle",
         "subList": [
             {
                 "Label": "subItem1",

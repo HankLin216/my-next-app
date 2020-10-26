@@ -7,8 +7,9 @@ interface DrawerItemList {
     to?: string;
     subList?: DrawerItemList[];
 }
+
 export default (req: NextApiRequest, res: NextApiResponse): void => {
-    const filePath = path.resolve("./public", "drawer.json");
+    const filePath = path.resolve("./definition", "drawerItems.json");
     const _drawerItemList = fs.readFileSync(filePath, "utf8");
     const drawerItemList: DrawerItemList[] = JSON.parse(_drawerItemList);
 

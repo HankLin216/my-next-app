@@ -4,7 +4,10 @@ import { Container, Typography } from "@material-ui/core/";
 import Link from "next/link";
 import { ReactElement } from "react";
 
-export default function Home(): ReactElement {
+//layout
+import Layout from "../components/Layout";
+
+const Home = (): ReactElement => {
     return (
         <Container>
             <ul>
@@ -17,4 +20,9 @@ export default function Home(): ReactElement {
             <Typography>Home</Typography>
         </Container>
     );
-}
+};
+
+//use layout
+Home.layout = Layout;
+
+export default Home;

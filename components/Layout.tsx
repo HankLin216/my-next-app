@@ -2,6 +2,7 @@
 import {
     AppBar,
     Button,
+    Collapse,
     Divider,
     Drawer,
     IconButton,
@@ -17,8 +18,33 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
+//initialization
 const appbarHeight = 50;
-
+const drawerWidth = 250;
+const drawerItems = [
+    {
+        Label: "Item1",
+        to: "/Item1"
+    },
+    {
+        Label: "Item2",
+        to: "/Item2"
+    },
+    {
+        Label: "Item3",
+        open: false,
+        subList: [
+            {
+                Label: "subItem1",
+                to: "/Item3/subItem1"
+            },
+            {
+                Label: "subItem2",
+                to: "/Item3/subItem2"
+            }
+        ]
+    }
+];
 //Layout
 interface StyleProps {
     windowsHeight: number;
@@ -40,6 +66,13 @@ const useStyles = (props: StyleProps) =>
             },
             title: {
                 flexGrow: 1
+            },
+            //drawer
+            drawer: {
+                width: drawerWidth,
+                "& .MuiDrawer-paper": {
+                    width: drawerWidth
+                }
             },
             //main
             main: {
@@ -83,7 +116,32 @@ const Layout = (props: LayoutProps): ReactElement => {
                 </Toolbar>
             </AppBar>
             {/* Drawer */}
-            <Drawer></Drawer>
+            <Drawer open={true} className={classes.drawer}>
+                <List>
+                    {drawerItems.map((item) =>
+                        Object.prototype.hasOwnProperty.call(item, "subList") ? (
+                            <div key={item.Label}>
+                                <ListItem button>
+                                    <ListItemText primary={item.Label}></ListItemText>
+                                </ListItem>
+                                <Collapse in={item.open}>
+                                    <List>
+                                        {item.subList?.map((subitem) => {
+                                            <ListItem key={item.Label} button>
+                                                <ListItemText>{subitem.Label}</ListItemText>
+                                            </ListItem>;
+                                        })}
+                                    </List>
+                                </Collapse>
+                            </div>
+                        ) : (
+                            <ListItem key={item.Label} button>
+                                <ListItemText primary={item.Label}></ListItemText>
+                            </ListItem>
+                        )
+                    )}
+                </List>
+            </Drawer>
             {/* main */}
             <main style={{ border: "3px solid red" }} className={classes.main}>
                 {props.children}
