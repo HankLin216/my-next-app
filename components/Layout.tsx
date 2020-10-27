@@ -16,12 +16,23 @@ import {
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
 import { Menu as MenuIcon } from "@material-ui/icons";
-import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { MouseEvent, ReactElement, ReactNode, useEffect, useReducer, useState } from "react";
 
 //initialization
 const appbarHeight = 50;
 const drawerWidth = 250;
-const drawerItems = [
+interface DrawerItems {
+    Label: string;
+    to?: string;
+    open?: undefined | boolean;
+    subList?:
+        | undefined
+        | {
+              Label: string;
+              to: string;
+          }[];
+}
+const drawerItems: DrawerItems[] | never = [
     {
         Label: "Item1",
         to: "/Item1"
@@ -43,11 +54,56 @@ const drawerItems = [
                 to: "/Item3/subItem2"
             }
         ]
+    },
+    {
+        Label: "Item4",
+        open: false,
+        subList: [
+            {
+                Label: "subItem1",
+                to: "/Item4/subItem1"
+            },
+            {
+                Label: "subItem2",
+                to: "/Item4/subItem2"
+            }
+        ]
     }
 ];
+//Reducer hook
+const initDrawerState = (drawerItems?: DrawerItems[]): { [key: string]: boolean } => {
+    const state: { [key: string]: boolean } = {};
+    if (!drawerItems) {
+        return state;
+    }
+    for (const item of drawerItems) {
+        if (Object.prototype.hasOwnProperty.call(item, "subList")) {
+            state[item.Label] = false;
+        }
+    }
+    return state;
+};
+const CHANGE_SUBITEM_LIST_STATE = "CHANGE_SUBITEM_LIST_STATE";
+interface ChangeSubItemListState {
+    type: typeof CHANGE_SUBITEM_LIST_STATE;
+    payload: {
+        label: string;
+    };
+}
+type DrawerActionType = ChangeSubItemListState;
+
+const drawerReducer = (state: { [key: string]: boolean }, action: DrawerActionType) => {
+    switch (action.type) {
+        case CHANGE_SUBITEM_LIST_STATE:
+            return { ...state, [action.payload.label]: !state[action.payload.label] };
+        default:
+            return { ...state };
+    }
+};
 //Layout
 interface StyleProps {
     windowsHeight: number;
+    drawerOpen: boolean;
 }
 
 const useStyles = (props: StyleProps) =>
@@ -56,7 +112,13 @@ const useStyles = (props: StyleProps) =>
             //appBar
             appBar: {
                 height: appbarHeight,
-                backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)"
+                backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)",
+                width: props.drawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
+                marginLeft: props.drawerOpen ? drawerWidth : 0,
+                transition: theme.transitions.create("margin", {
+                    easing: theme.transitions.easing.easeOut,
+                    duration: theme.transitions.duration.enteringScreen
+                })
             },
             toolBar: {
                 minHeight: appbarHeight
@@ -76,7 +138,12 @@ const useStyles = (props: StyleProps) =>
             },
             //main
             main: {
-                height: props.windowsHeight - appbarHeight
+                marginLeft: props.drawerOpen ? drawerWidth : 0,
+                height: props.windowsHeight - appbarHeight,
+                transition: theme.transitions.create("margin", {
+                    easing: theme.transitions.easing.easeOut,
+                    duration: theme.transitions.duration.enteringScreen
+                })
             }
         })
     );
@@ -86,17 +153,31 @@ interface LayoutProps {
 }
 
 const Layout = (props: LayoutProps): ReactElement => {
+    //state
     const [windowsHeight, setWindowsHeight] = useState<number>(0);
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [drawerItemState, dispatch] = useReducer(drawerReducer, drawerItems, initDrawerState);
     //
     useEffect(() => {
         const windowsHeight = window.innerHeight;
 
         setWindowsHeight(windowsHeight);
     }, []);
-    //
-
-    const classes = useStyles({ windowsHeight })();
-
+    //style
+    const classes = useStyles({ windowsHeight, drawerOpen })();
+    //method
+    function handleMenuButtonClick(): void {
+        setDrawerOpen(!drawerOpen);
+    }
+    function handleListItemClick(event: MouseEvent<HTMLDivElement>): void {
+        console.log(event.currentTarget.innerText);
+        dispatch({
+            type: CHANGE_SUBITEM_LIST_STATE,
+            payload: {
+                label: event.currentTarget.innerText
+            }
+        });
+    }
     return (
         <>
             {/* navigation */}
@@ -106,7 +187,8 @@ const Layout = (props: LayoutProps): ReactElement => {
                         edge="start"
                         className={classes.menuButton}
                         color="inherit"
-                        aria-label="menu">
+                        aria-label="menu"
+                        onClick={handleMenuButtonClick}>
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
@@ -116,20 +198,23 @@ const Layout = (props: LayoutProps): ReactElement => {
                 </Toolbar>
             </AppBar>
             {/* Drawer */}
-            <Drawer open={true} className={classes.drawer}>
+            <Drawer open={drawerOpen} variant="persistent" className={classes.drawer}>
                 <List>
                     {drawerItems.map((item) =>
                         Object.prototype.hasOwnProperty.call(item, "subList") ? (
                             <div key={item.Label}>
-                                <ListItem button>
+                                <ListItem button onClick={handleListItemClick}>
                                     <ListItemText primary={item.Label}></ListItemText>
                                 </ListItem>
-                                <Collapse in={item.open}>
+                                <Collapse in={drawerItemState[item.Label]}>
                                     <List>
                                         {item.subList?.map((subitem) => {
-                                            <ListItem key={item.Label} button>
-                                                <ListItemText>{subitem.Label}</ListItemText>
-                                            </ListItem>;
+                                            return (
+                                                <ListItem key={subitem.Label} button>
+                                                    <ListItemText
+                                                        primary={subitem.Label}></ListItemText>
+                                                </ListItem>
+                                            );
                                         })}
                                     </List>
                                 </Collapse>

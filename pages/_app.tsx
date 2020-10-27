@@ -6,7 +6,8 @@ import { ThemeProvider } from "@material-ui/core/styles";
 //next
 import { NextPage } from "next";
 import { Router } from "next/dist/client/router";
-import { ReactElement, ReactNode } from "react";
+import Head from "next/head";
+import { ReactElement, ReactNode, useEffect } from "react";
 
 //layout
 import Layout from "../components/Layout";
@@ -32,13 +33,30 @@ type AppLayoutProps = {
 
 // eslint-disable-next-line no-unused-vars
 function WrappedApp({ Component, pageProps, router }: AppLayoutProps): ReactElement {
+    useEffect(() => {
+        // Remove the server-side injected CSS.
+        const jssStyles = document.querySelector("#jss-server-side");
+        if (jssStyles) {
+            (jssStyles.parentElement as HTMLElement).removeChild(jssStyles);
+        }
+    }, []);
+
     const Layout = Component.layout || NoLayout;
     return (
-        <ThemeProvider theme={theme}>
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
-        </ThemeProvider>
+        <>
+            <Head>
+                <title>My web</title>
+                <meta
+                    name="viewport"
+                    content="minimum-scale=1, initial-scale=1, width=device-width"
+                />
+            </Head>
+            <ThemeProvider theme={theme}>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </ThemeProvider>
+        </>
     );
 }
 
