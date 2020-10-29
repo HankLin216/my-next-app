@@ -1,6 +1,8 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { ReactElement, useEffect } from "react";
 
+//Layout
+import Layout from "../components/Layout";
 //redux
 import { wrapper } from "../store/index";
 
@@ -29,5 +31,7 @@ export const getServerSideProps: GetServerSideProps<Promise<{
         }
     };
 });
+
+About.layout = Layout;
 
 export default About;

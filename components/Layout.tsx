@@ -1,21 +1,21 @@
+//next
 //material
 import {
     AppBar,
     Button,
     Collapse,
-    Divider,
     Drawer,
     IconButton,
     List,
     ListItem,
-    ListItemIcon,
     ListItemText,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
-import { Menu as MenuIcon } from "@material-ui/icons";
+import { ExpandLess, ExpandMore, Home, Menu as MenuIcon } from "@material-ui/icons";
+import Link from "next/link";
 import { MouseEvent, ReactElement, ReactNode, useEffect, useReducer, useState } from "react";
 
 //initialization
@@ -115,7 +115,7 @@ const useStyles = (props: StyleProps) =>
                 backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)",
                 width: props.drawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
-                transition: theme.transitions.create("margin", {
+                transition: theme.transitions.create(["margin", "width"], {
                     easing: theme.transitions.easing.easeOut,
                     duration: theme.transitions.duration.enteringScreen
                 })
@@ -127,13 +127,21 @@ const useStyles = (props: StyleProps) =>
                 marginRight: theme.spacing(2)
             },
             title: {
-                flexGrow: 1
+                color: "#fff",
+                marginLeft: "auto",
+                marginRight: "auto",
+                textAlign: "center"
             },
             //drawer
             drawer: {
                 width: drawerWidth,
                 "& .MuiDrawer-paper": {
                     width: drawerWidth
+                }
+            },
+            drawerSubList: {
+                "& .MuiListItemText-root": {
+                    paddingLeft: 30
                 }
             },
             //main
@@ -191,9 +199,18 @@ const Layout = (props: LayoutProps): ReactElement => {
                         onClick={handleMenuButtonClick}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        MS
-                    </Typography>
+                    <Link href={"/"} passHref>
+                        <Button className={classes.title}>
+                            <Typography variant="h6">MS</Typography>
+                        </Button>
+                    </Link>
+
+                    <Link href={"/home"} passHref>
+                        <IconButton color="inherit">
+                            <Home>Home</Home>
+                        </IconButton>
+                    </Link>
+
                     <Button color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
@@ -205,24 +222,34 @@ const Layout = (props: LayoutProps): ReactElement => {
                             <div key={item.Label}>
                                 <ListItem button onClick={handleListItemClick}>
                                     <ListItemText primary={item.Label}></ListItemText>
+
+                                    {drawerItemState[item.Label] ? <ExpandLess /> : <ExpandMore />}
                                 </ListItem>
+
                                 <Collapse in={drawerItemState[item.Label]}>
-                                    <List>
+                                    <List className={classes.drawerSubList}>
                                         {item.subList?.map((subitem) => {
                                             return (
-                                                <ListItem key={subitem.Label} button>
-                                                    <ListItemText
-                                                        primary={subitem.Label}></ListItemText>
-                                                </ListItem>
+                                                <Link
+                                                    key={subitem.Label}
+                                                    href={subitem.to || "/404"}
+                                                    passHref>
+                                                    <ListItem button component="a">
+                                                        <ListItemText
+                                                            primary={subitem.Label}></ListItemText>
+                                                    </ListItem>
+                                                </Link>
                                             );
                                         })}
                                     </List>
                                 </Collapse>
                             </div>
                         ) : (
-                            <ListItem key={item.Label} button>
-                                <ListItemText primary={item.Label}></ListItemText>
-                            </ListItem>
+                            <Link key={item.Label} href={item.to || "/404"} passHref>
+                                <ListItem key={item.Label} button component="a">
+                                    <ListItemText primary={item.Label}></ListItemText>
+                                </ListItem>
+                            </Link>
                         )
                     )}
                 </List>

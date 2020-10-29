@@ -2,12 +2,10 @@ import { Context, createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
 import { combineReducers, createStore } from "redux";
 
 //reducer
-import ReducerA from "./reducerA";
-import ReducerB from "./reducerB";
+import item3Reducer from "./item3";
 
 const rootReducer = combineReducers({
-    AState: ReducerA,
-    Bstate: ReducerB
+    item3State: item3Reducer
 });
 
 // const rootReducer = (state: any, action: any) => {
