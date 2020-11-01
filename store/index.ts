@@ -1,10 +1,11 @@
 import { Context, createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
-import { combineReducers, createStore } from "redux";
+import { applyMiddleware, combineReducers, createStore } from "redux";
+import thunk from "redux-thunk";
 
 //reducer
 import item3Reducer from "./item3";
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
     item3State: item3Reducer
 });
 
@@ -21,8 +22,9 @@ const rootReducer = combineReducers({
 //     }
 // };
 
-export type RootState = ReturnType<typeof rootReducer>;
+type RootState = ReturnType<typeof rootReducer>;
 
 // eslint-disable-next-line no-unused-vars
-const makeStore: MakeStore<RootState> = (context: Context) => createStore(rootReducer);
+const makeStore: MakeStore<RootState> = (context: Context) =>
+    createStore(rootReducer, applyMiddleware(thunk));
 export const wrapper = createWrapper<RootState>(makeStore, { debug: true });

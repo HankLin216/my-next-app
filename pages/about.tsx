@@ -22,7 +22,7 @@ interface Props {
 export const getServerSideProps: GetServerSideProps<Promise<{
     props: Props;
 }>> = wrapper.getServerSideProps(async ({ store, preview }) => {
-    const ss = store.getState();
+    const rootState = store.getState();
     store.dispatch({ type: "Hello" });
 
     return {

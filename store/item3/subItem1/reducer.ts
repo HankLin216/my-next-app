@@ -9,6 +9,10 @@ const initState: InitState = {
 };
 
 const reducer = (state = initState, action: ActionType): InitState => {
+    if(action.namespace !== Action.NAMESPACE ){
+        return {...state};
+    }
+
     switch (action.type) {
         case Action.ADD_COUNT:
             return {

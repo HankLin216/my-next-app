@@ -1,5 +1,12 @@
 {
     "compilerOptions": {
+        "baseUrl": ".", // This must be specified if "paths" is.
+        "paths":{
+            "@definition/*":["definition/*"],
+            "@store/*":["store/*"],
+            "@components/*":["components/*"],
+            "@apptypes/*":["apptypes/*"]
+        },
         "target": "es5",
         "lib": [
             "dom",
