@@ -34,7 +34,7 @@ const reducer = (state = initState, action: ActionType & AnyAction): InitState =
     }
     switch (action.type) {
         //server
-        case Action.SERVERSID_ADD_COUNT:
+        case Action.SERVER_ADD_COUNT:
             return {
                 ...state,
                 server: {

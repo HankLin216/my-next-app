@@ -17,7 +17,7 @@ const initState: InitState = {
 };
 
 const reducer = (state = initState, action: ActionType): InitState => {
-    if (action.namespace !== Action.NAMESPACE) {
+    if (action.namespace === undefined || action.namespace !== Action.NAMESPACE) {
         return { ...state };
     }
     switch (action.type) {
