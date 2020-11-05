@@ -20,12 +20,11 @@ const initState: InitState = {
 
 const reducer = (state = initState, action: ActionType & AnyAction): InitState => {
     if (action.type === HYDRATE) {
-        const _s = (action.payload as RootState).item3State.subItem1State.server.count;
         return {
             ...state,
             server: {
                 ...state.server,
-                count: (action.payload as RootState).item3State.subItem1State.server.count
+                ...(action.payload as RootState).item3State.subItem1State.server
             }
         };
     }
