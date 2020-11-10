@@ -15,7 +15,7 @@ import {
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { AccountCircle, Lock } from "@material-ui/icons";
 import Cookies from "js-cookie";
-import React, { ReactElement, useRef, useState } from "react";
+import React, { Dispatch, ReactElement, SetStateAction, useRef, useState } from "react";
 
 const useStyles = () =>
     makeStyles((theme: Theme) =>
@@ -32,14 +32,23 @@ const useStyles = () =>
                 padding: theme.spacing(3)
             },
             formAction: {
-                // "& button":{
-                //     width:
-                // }
+                width: "100%",
+                "& button": {
+                    width: "100%"
+                }
             }
         })
     );
-const login = (): ReactElement => {
+interface LoginPropsType {
+    setLogin: Dispatch<SetStateAction<boolean>>;
+}
+
+const Login = (props: LoginPropsType): ReactElement => {
     const [isFetch, setIsFetch] = useState<boolean>(false);
+    const [textFieldError, setTextFieldError] = useState<{
+        account: string;
+        password: string;
+    }>({ account: "", password: "" });
     const accountRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
     const classes = useStyles()();
@@ -49,7 +58,12 @@ const login = (): ReactElement => {
         //get the value
         const account = accountRef.current?.value;
         const password = passwordRef.current?.value;
-        if (!account || !password) {
+        if (!account) {
+            setTextFieldError({ ...textFieldError, account: "請重新輸入帳號", password: "" });
+            return;
+        }
+        if (!password) {
+            setTextFieldError({ ...textFieldError, account: "", password: "請重新輸入密碼" });
             return;
         }
         //auth
@@ -58,9 +72,22 @@ const login = (): ReactElement => {
             account,
             password
         });
-        //set cookie
-        Cookies.set(account, result.token);
         setIsFetch(false);
+        //check
+        switch (result.error) {
+            case "查無此帳號帳號":
+                setTextFieldError({ ...textFieldError, account: result.error, password: "" });
+                return;
+            case "密碼錯誤":
+                setTextFieldError({ ...textFieldError, account: "", password: result.error });
+                return;
+        }
+        //set cookie
+        Cookies.set("UserAccount", account);
+        Cookies.set(account, result.token);
+        //inform index page user has login success
+        props.setLogin(true);
+        return;
     };
     return (
         <Paper square elevation={5} className={classes.root}>
@@ -69,17 +96,19 @@ const login = (): ReactElement => {
             </Typography>
             <Divider></Divider>
             {isFetch ? <LinearProgress></LinearProgress> : null}
-            <Box m={2}>
+            <Box p={2}>
                 <Grid
                     container
                     direction="column"
                     justify="center"
                     alignItems="center"
                     className={classes.formBody}
-                    spacing={2}>
+                    spacing={3}>
                     <Grid item>
                         <TextField
                             label="Account"
+                            error={textFieldError.account ? true : false}
+                            helperText={textFieldError.account}
                             inputRef={accountRef}
                             InputProps={{
                                 startAdornment: (
@@ -91,7 +120,9 @@ const login = (): ReactElement => {
                     </Grid>
                     <Grid item>
                         <TextField
-                            label="password"
+                            label="Password"
+                            error={textFieldError.password ? true : false}
+                            helperText={textFieldError.password}
                             inputRef={passwordRef}
                             InputProps={{
                                 startAdornment: (
@@ -101,7 +132,7 @@ const login = (): ReactElement => {
                                 )
                             }}></TextField>
                     </Grid>
-                    <Grid item>
+                    <Grid item className={classes.formAction}>
                         <Button variant="outlined" onClick={handleLoginClick}>
                             Comfirm
                         </Button>
@@ -112,4 +143,4 @@ const login = (): ReactElement => {
     );
 };
 
-export default login;
+export default Login;

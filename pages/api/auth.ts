@@ -19,11 +19,17 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
         "SELECT password FROM ms.user where `name` = ? ;",
         [account]
     );
+    if (rows.length === 0) {
+        res.statusCode = 404;
+        res.json({ token: "", error: "查無此帳號帳號" });
+        return;
+    }
     const isValid = rows[0].password === password ? true : false;
 
     if (!isValid) {
-        res.statusCode = 404;
-        res.json({ token: "", error: "帳號或密碼錯誤!" });
+        res.statusCode = 401;
+        res.json({ token: "", error: "密碼錯誤!" });
+        return;
     }
     //
     if (!process.env.JWT_SECRET) {
@@ -37,4 +43,5 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     });
     res.statusCode = 200;
     res.json({ token, error: "" });
+    return;
 };
