@@ -38,7 +38,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     if (!process.env.JWT_ALGORITHM) {
         throw new Error("未設定加密演算法");
     }
-    const token = jwt.sign({ account }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ UserAccount: account }, process.env.JWT_SECRET, {
         algorithm: process.env.JWT_ALGORITHM as jwt.Algorithm
     });
     res.statusCode = 200;

@@ -1,4 +1,4 @@
-import { LoginPostData, VaildResult } from "@apptypes/auth";
+import { AuthResult, LoginPostData } from "@apptypes/auth";
 import { Post } from "@lib/client/fetcher";
 import {
     Box,
@@ -68,7 +68,7 @@ const Login = (props: LoginPropsType): ReactElement => {
         }
         //auth
         setIsFetch(true);
-        const result = await Post<LoginPostData, VaildResult>("/api/auth", {
+        const result = await Post<LoginPostData, AuthResult>("/api/auth", {
             account,
             password
         });
@@ -89,8 +89,14 @@ const Login = (props: LoginPropsType): ReactElement => {
         props.setLogin(true);
         return;
     };
+
+    const handleKeyBoardPress = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+        if (event.key === "Enter") {
+            handleLoginClick();
+        }
+    };
     return (
-        <Paper square elevation={5} className={classes.root}>
+        <Paper square elevation={5} className={classes.root} onKeyPress={handleKeyBoardPress}>
             <Typography variant="h5" className={classes.formTitle}>
                 Login
             </Typography>

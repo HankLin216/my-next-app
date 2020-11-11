@@ -18,7 +18,7 @@ export const verifyAuth = (ctx: GetServerSidePropsContext): VerifyReponse | unde
             if (process.env.JWT_SECRET === undefined) {
                 throw new Error("伺服器遺失密鑰!");
             }
-            if (process.env.JWT_ALGORITHM) {
+            if (process.env.JWT_ALGORITHM === undefined) {
                 throw new Error("伺服器找不到解密演算法!");
             }
             //verify token
@@ -26,22 +26,21 @@ export const verifyAuth = (ctx: GetServerSidePropsContext): VerifyReponse | unde
                 algorithms: [process.env.JWT_ALGORITHM] as jwt.Algorithm[]
             });
             //compare with account
-            if ((payload as { [key: string]: string })[userAccount] === userAccount) {
+            if ((payload as { [key: string]: string })["UserAccount"] === userAccount) {
                 VerifyReponse.account = userAccount;
                 return VerifyReponse;
             }
-
-            ctx.res
-                .writeHead(302, {
-                    Location: "/login"
-                })
-                .end();
-            return;
         }
+        ctx.res
+            .writeHead(302, {
+                Location: "/"
+            })
+            .end();
+        return;
     } catch (error: unknown) {
         ctx.res
             .writeHead(302, {
-                Location: "/login"
+                Location: "/"
             })
             .end();
         return;

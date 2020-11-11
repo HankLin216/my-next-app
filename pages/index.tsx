@@ -1,12 +1,14 @@
 // import Head from "next/head";
 import Login from "@components/form/login";
-import { Box, Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
+import { Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import Cookies from "cookie";
 import * as jsCookies from "js-cookie";
+import jwt from "jsonwebtoken";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 // import styles from "../styles/Home.module.css";
-import { ReactElement, useState } from "react";
-
+import { ReactElement, useEffect, useState } from "react";
 const useStyles = () =>
     makeStyles((theme: Theme) =>
         createStyles({
@@ -45,9 +47,17 @@ const useStyles = () =>
         })
     );
 
-const Index = (): ReactElement => {
+const Index = ({
+    hasLogin
+}: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement => {
     const classes = useStyles()();
     const [login, setLogin] = useState(false);
+    //lifecycle
+    useEffect(() => {
+        if (hasLogin) {
+            setLogin(true);
+        }
+    }, []);
     //method
     const getUserAccountAfterVerify = (): ReactElement => {
         //get user account
@@ -61,18 +71,14 @@ const Index = (): ReactElement => {
                     <Typography variant="subtitle1">{`Click following botton to continue`}</Typography>
                 </Grid>
                 <Grid item>
-                    <Grid container>
-                        <Grid item>
-                            <Link href="/home" passHref>
-                                <Button variant="outlined" style={{ marginRight: "16px" }}>
-                                    Start
-                                </Button>
-                            </Link>
-                            <Button variant="outlined" onClick={handleLogout}>
-                                Logout
-                            </Button>
-                        </Grid>
-                    </Grid>
+                    <Link href="/home" passHref>
+                        <Button variant="outlined" style={{ marginRight: "16px" }}>
+                            Start
+                        </Button>
+                    </Link>
+                    <Button variant="outlined" onClick={handleLogout}>
+                        Logout
+                    </Button>
                 </Grid>
             </Grid>
         );
@@ -98,7 +104,7 @@ const Index = (): ReactElement => {
                     <Grid id={"barGridContainer"} container justify="center" alignItems="center">
                         <Grid item xs={12}>
                             <Typography variant={"h5"} className={classes.barTitle}>
-                                MS
+                                YIYI0831
                             </Typography>
                         </Grid>
                     </Grid>
@@ -108,15 +114,23 @@ const Index = (): ReactElement => {
                 <Container id="mainContainer" fixed>
                     <Grid id="mainGridContainer" container justify="center" alignItems="center">
                         <Grid item xs={6}>
-                            <Typography variant={"h4"}>Welcome to MS</Typography>
-                            <br></br>
-                            <Typography variant={"h5"}>here is some description</Typography>
+                            <Grid container justify="center" alignItems="center">
+                                <Grid item>
+                                    <Typography variant={"h4"}>Welcome to YIYI0831</Typography>
+                                    <br></br>
+                                    <Typography variant={"h5"}>here is some description</Typography>
+                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6} alignItems="center">
+                        <Grid item xs={6}>
                             {login ? (
                                 getUserAccountAfterVerify()
                             ) : (
-                                <Login setLogin={setLogin}></Login>
+                                <Grid container justify="center" alignItems="center">
+                                    <Grid item>
+                                        <Login setLogin={setLogin}></Login>
+                                    </Grid>
+                                </Grid>
                             )}
                         </Grid>
                     </Grid>
@@ -125,6 +139,39 @@ const Index = (): ReactElement => {
             <Grid item xs={12} className={classes.footerView}></Grid>
         </Grid>
     );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    let hasLogin = false;
+    //get the cookies
+    const RawCookies = context.req.headers.cookie;
+    if (RawCookies !== undefined) {
+        const cookies = Cookies.parse(RawCookies);
+        //get the user Account
+        const userAccount = cookies["UserAccount"];
+        //get the token
+        const token = cookies[userAccount];
+        //check env variable
+        if (process.env.JWT_SECRET === undefined) {
+            throw new Error("伺服器遺失密鑰!");
+        }
+        if (process.env.JWT_ALGORITHM === undefined) {
+            throw new Error("伺服器找不到解密演算法!");
+        }
+        //verify token
+        const payload = jwt.verify(token, process.env.JWT_SECRET, {
+            algorithms: [process.env.JWT_ALGORITHM] as jwt.Algorithm[]
+        });
+        //compare with account
+        if ((payload as { [key: string]: string })["UserAccount"] === userAccount) {
+            hasLogin = true;
+        }
+    }
+    return {
+        props: {
+            hasLogin
+        }
+    };
 };
 
 export default Index;
