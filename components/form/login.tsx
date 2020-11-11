@@ -75,7 +75,7 @@ const Login = (props: LoginPropsType): ReactElement => {
         setIsFetch(false);
         //check
         switch (result.error) {
-            case "查無此帳號帳號":
+            case "查無此帳號":
                 setTextFieldError({ ...textFieldError, account: result.error, password: "" });
                 return;
             case "密碼錯誤":
@@ -83,7 +83,7 @@ const Login = (props: LoginPropsType): ReactElement => {
                 return;
         }
         //set cookie
-        Cookies.set("UserAccount", account);
+        Cookies.set("Account", account);
         Cookies.set(account, result.token);
         //inform index page user has login success
         props.setLogin(true);

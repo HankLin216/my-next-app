@@ -1,5 +1,6 @@
 // import Head from "next/head";
 import Login from "@components/form/login";
+import { verifyAuth } from "@lib/verifyAuth";
 import { Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Cookies from "cookie";
@@ -61,7 +62,7 @@ const Index = ({
     //method
     const getUserAccountAfterVerify = (): ReactElement => {
         //get user account
-        const userAccount = jsCookies.get("UserAccount");
+        const userAccount = jsCookies.get("Account");
         return (
             <Grid container direction="column" spacing={3} justify="center" alignItems="center">
                 <Grid item>
@@ -85,8 +86,8 @@ const Index = ({
     };
     const handleLogout = (): void => {
         //get user account
-        const account = jsCookies.get("UserAccount");
-        jsCookies.remove("UserAccount");
+        const account = jsCookies.get("Account");
+        jsCookies.remove("Account");
         if (account !== undefined) {
             jsCookies.remove(account);
         }
@@ -143,29 +144,9 @@ const Index = ({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     let hasLogin = false;
-    //get the cookies
-    const RawCookies = context.req.headers.cookie;
-    if (RawCookies !== undefined) {
-        const cookies = Cookies.parse(RawCookies);
-        //get the user Account
-        const userAccount = cookies["UserAccount"];
-        //get the token
-        const token = cookies[userAccount];
-        //check env variable
-        if (process.env.JWT_SECRET === undefined) {
-            throw new Error("伺服器遺失密鑰!");
-        }
-        if (process.env.JWT_ALGORITHM === undefined) {
-            throw new Error("伺服器找不到解密演算法!");
-        }
-        //verify token
-        const payload = jwt.verify(token, process.env.JWT_SECRET, {
-            algorithms: [process.env.JWT_ALGORITHM] as jwt.Algorithm[]
-        });
-        //compare with account
-        if ((payload as { [key: string]: string })["UserAccount"] === userAccount) {
-            hasLogin = true;
-        }
+    const verifyResponse = verifyAuth(context);
+    if (verifyResponse !== undefined) {
+        hasLogin = true;
     }
     return {
         props: {

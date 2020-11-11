@@ -12,7 +12,7 @@ export const verifyAuth = (ctx: GetServerSidePropsContext): VerifyReponse | unde
         if (RawCookies !== undefined) {
             const cookies = Cookies.parse(RawCookies);
             //get the user account
-            const userAccount = cookies["UserAccount"];
+            const userAccount = cookies["Account"];
             //get the token
             const token = cookies[userAccount];
             if (process.env.JWT_SECRET === undefined) {
@@ -26,23 +26,27 @@ export const verifyAuth = (ctx: GetServerSidePropsContext): VerifyReponse | unde
                 algorithms: [process.env.JWT_ALGORITHM] as jwt.Algorithm[]
             });
             //compare with account
-            if ((payload as { [key: string]: string })["UserAccount"] === userAccount) {
+            if ((payload as { [key: string]: string })["Account"] === userAccount) {
                 VerifyReponse.account = userAccount;
                 return VerifyReponse;
             }
         }
-        ctx.res
-            .writeHead(302, {
-                Location: "/"
-            })
-            .end();
-        return;
+        if (ctx.resolvedUrl !== "/") {
+            ctx.res
+                .writeHead(302, {
+                    Location: "/"
+                })
+                .end();
+            return;
+        }
     } catch (error: unknown) {
-        ctx.res
-            .writeHead(302, {
-                Location: "/"
-            })
-            .end();
-        return;
+        if (ctx.resolvedUrl !== "/") {
+            ctx.res
+                .writeHead(302, {
+                    Location: "/"
+                })
+                .end();
+            return;
+        }
     }
 };

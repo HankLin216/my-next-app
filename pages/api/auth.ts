@@ -16,12 +16,12 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     const conn = await mysql.createConnection(config);
 
     const [rows, fileds] = await conn.execute<mysql.RowDataPacket[]>(
-        "SELECT password FROM ms.user where `name` = ? ;",
+        "SELECT password FROM ms.user where `id` = ? ;",
         [account]
     );
     if (rows.length === 0) {
         res.statusCode = 404;
-        res.json({ token: "", error: "查無此帳號帳號" });
+        res.json({ token: "", error: "查無此帳號" });
         return;
     }
     const isValid = rows[0].password === password ? true : false;
@@ -38,7 +38,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     if (!process.env.JWT_ALGORITHM) {
         throw new Error("未設定加密演算法");
     }
-    const token = jwt.sign({ UserAccount: account }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ Account: account }, process.env.JWT_SECRET, {
         algorithm: process.env.JWT_ALGORITHM as jwt.Algorithm
     });
     res.statusCode = 200;
