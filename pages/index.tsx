@@ -1,11 +1,9 @@
 // import Head from "next/head";
 import Login from "@components/form/login";
-import { verifyAuth } from "@lib/verifyAuth";
+import { verifyAuth } from "@lib/server/verifyAuth";
 import { Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import Cookies from "cookie";
 import * as jsCookies from "js-cookie";
-import jwt from "jsonwebtoken";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 // import styles from "../styles/Home.module.css";
@@ -18,12 +16,12 @@ const useStyles = () =>
             },
             barView: {
                 width: "100%",
-                height: "10%",
+                minHeight: "10vh",
                 borderBottom: "1px solid black",
                 "& #barContainer": {
-                    height: "100%",
+                    minHeight: "inherit",
                     "& #barGridContainer": {
-                        height: "100%"
+                        minHeight: "inherit"
                     }
                 }
             },
@@ -31,19 +29,19 @@ const useStyles = () =>
                 fontWeight: theme.typography.fontWeightBold
             },
             mainView: {
-                width: "100%",
-                height: "50%",
+                minHeight: "50vh",
                 borderBottom: "1px solid black",
+                textAlign: "center",
                 "& #mainContainer": {
-                    height: "100%",
+                    minHeight: "inherit",
                     "& #mainGridContainer": {
-                        height: "100%"
+                        minHeight: "inherit"
                     }
                 }
             },
             footerView: {
                 width: "100%",
-                height: "40%"
+                minHeight: "40%"
             }
         })
     );
@@ -94,36 +92,27 @@ const Index = ({
         setLogin(false);
     };
     return (
-        <Grid
-            container
-            justify="center"
-            alignItems="center"
-            direction="row"
-            className={classes.root}>
+        <Grid container justify="center" alignItems="center" className={classes.root}>
             <Grid item xs={12} className={classes.barView}>
-                <Container id={"barContainer"} fixed>
+                <Container id={"barContainer"}>
                     <Grid id={"barGridContainer"} container justify="center" alignItems="center">
                         <Grid item xs={12}>
                             <Typography variant={"h5"} className={classes.barTitle}>
-                                YIYI0831
+                                MS
                             </Typography>
                         </Grid>
                     </Grid>
                 </Container>
             </Grid>
             <Grid item xs={12} className={classes.mainView}>
-                <Container id="mainContainer" fixed>
+                <Container id="mainContainer">
                     <Grid id="mainGridContainer" container justify="center" alignItems="center">
-                        <Grid item xs={6}>
-                            <Grid container justify="center" alignItems="center">
-                                <Grid item>
-                                    <Typography variant={"h4"}>Welcome to YIYI0831</Typography>
-                                    <br></br>
-                                    <Typography variant={"h5"}>here is some description</Typography>
-                                </Grid>
-                            </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant={"h4"}>Welcome to MS</Typography>
+                            <br></br>
+                            <Typography variant={"h5"}>here is some description</Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} sm={6}>
                             {login ? (
                                 getUserAccountAfterVerify()
                             ) : (

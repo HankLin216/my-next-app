@@ -16,7 +16,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
 import { ExpandLess, ExpandMore, Home, Menu as MenuIcon } from "@material-ui/icons";
 import Link from "next/link";
-import { MouseEvent, ReactElement, ReactNode, useEffect, useReducer, useState } from "react";
+import { MouseEvent, ReactElement, ReactNode, useReducer, useState } from "react";
 
 //initialization
 const appbarHeight = 50;
@@ -68,6 +68,20 @@ const drawerItems: DrawerItems[] | never = [
                 to: "/Item4/subItem2"
             }
         ]
+    },
+    {
+        Label: "Test",
+        open: false,
+        subList: [
+            {
+                Label: "MyMaterialTable",
+                to: "/test/MyMaterialTable"
+            },
+            {
+                Label: "MyHandsonTable",
+                to: "/test/MyHandsonTable"
+            }
+        ]
     }
 ];
 //Reducer hook
@@ -102,7 +116,6 @@ const drawerReducer = (state: { [key: string]: boolean }, action: DrawerActionTy
 };
 //Layout
 interface StyleProps {
-    windowsHeight: number;
     drawerOpen: boolean;
 }
 
@@ -147,7 +160,7 @@ const useStyles = (props: StyleProps) =>
             //main
             main: {
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
-                height: props.windowsHeight - appbarHeight,
+                height: `calc(100% - ${appbarHeight}px)`,
                 transition: theme.transitions.create("margin", {
                     easing: theme.transitions.easing.easeOut,
                     duration: theme.transitions.duration.enteringScreen
@@ -162,17 +175,11 @@ interface LayoutProps {
 
 const Layout = (props: LayoutProps): ReactElement => {
     //state
-    const [windowsHeight, setWindowsHeight] = useState<number>(0);
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [drawerItemState, dispatch] = useReducer(drawerReducer, drawerItems, initDrawerState);
-    //
-    useEffect(() => {
-        const windowsHeight = window.innerHeight;
 
-        setWindowsHeight(windowsHeight);
-    }, []);
     //style
-    const classes = useStyles({ windowsHeight, drawerOpen })();
+    const classes = useStyles({ drawerOpen })();
     //method
     function handleMenuButtonClick(): void {
         setDrawerOpen(!drawerOpen);
@@ -255,9 +262,7 @@ const Layout = (props: LayoutProps): ReactElement => {
                 </List>
             </Drawer>
             {/* main */}
-            <main style={{ border: "3px solid red" }} className={classes.main}>
-                {props.children}
-            </main>
+            <main className={classes.main}>{props.children}</main>
         </>
     );
 };

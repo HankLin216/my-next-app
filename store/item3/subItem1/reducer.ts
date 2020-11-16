@@ -24,7 +24,9 @@ const reducer = (state = initState, action: ActionType & AnyAction): InitState =
             ...state,
             server: {
                 ...state.server,
-                ...(action.payload as RootState).item3State.subItem1State.server
+                count:
+                    state.server.count +
+                    (action.payload as RootState).item3State.subItem1State.server.count
             }
         };
     }
