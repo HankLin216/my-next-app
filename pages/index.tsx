@@ -3,6 +3,7 @@ import Login from "@components/form/login";
 import { verifyAuth } from "@lib/server/verifyAuth";
 import { Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { VerifiedUser } from "@material-ui/icons";
 import * as jsCookies from "js-cookie";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";

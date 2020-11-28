@@ -29,7 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
 
     if (!isValid) {
         res.statusCode = 401;
-        res.json({ token: "", error: "密碼錯誤!" });
+        res.json({ token: "", error: "密碼錯誤" });
         return;
     }
     //

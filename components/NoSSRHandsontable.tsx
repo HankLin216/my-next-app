@@ -1,6 +1,6 @@
 import { css } from "@emotion/core";
 import dynamic from "next/dynamic";
-import { ReactElement } from "react";
+import React from "react";
 import PropagateLoader from "react-spinners/PropagateLoader";
 
 const override = css`
@@ -22,8 +22,10 @@ const NoSSRHandsontable = dynamic(() => import("./Handsontable"), {
     ssr: false,
     loading: getloader()
 });
-const NoSSRHandsontableWarpper = (props: PropsType): ReactElement => {
-    return <NoSSRHandsontable data={props.data}></NoSSRHandsontable>;
-};
 
-export default NoSSRHandsontableWarpper;
+// eslint-disable-next-line react/display-name
+const NoSSRHandsontableWrapper = React.forwardRef((props: PropsType, ref) => (
+    <NoSSRHandsontable {...props} forwardedRef={ref} />
+));
+
+export default NoSSRHandsontableWrapper;

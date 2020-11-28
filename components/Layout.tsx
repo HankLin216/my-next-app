@@ -80,6 +80,10 @@ const drawerItems: DrawerItems[] | never = [
             {
                 Label: "MyHandsonTable",
                 to: "/test/MyHandsonTable"
+            },
+            {
+                Label: "MyHandsonTable2",
+                to: "/test/MyHandsonTable2"
             }
         ]
     }

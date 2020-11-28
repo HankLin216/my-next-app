@@ -6,11 +6,15 @@ import React, { ReactElement } from "react";
 interface PropsType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    forwardedRef: any;
 }
 
+// eslint-disable-next-line react/display-name
 const Handsontable = (props: PropsType): ReactElement => {
     return (
         <HotTable
+            ref={props.forwardedRef}
             data={props.data}
             colHeaders={true}
             rowHeaders={true}
@@ -34,5 +38,4 @@ const Handsontable = (props: PropsType): ReactElement => {
             licenseKey="non-commercial-and-evaluation"></HotTable>
     );
 };
-
 export default Handsontable;

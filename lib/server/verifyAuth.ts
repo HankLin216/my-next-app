@@ -2,7 +2,9 @@ import { VerifyReponse } from "@apptypes/auth";
 import Cookies from "cookie";
 import jwt from "jsonwebtoken";
 import { GetServerSidePropsContext } from "next";
-export const verifyAuth = (ctx: GetServerSidePropsContext): VerifyReponse | undefined => {
+
+type PropsType = GetServerSidePropsContext;
+export const verifyAuth = (ctx: PropsType): VerifyReponse | undefined => {
     try {
         const VerifyReponse: VerifyReponse = {
             account: ""

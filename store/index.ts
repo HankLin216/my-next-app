@@ -4,9 +4,11 @@ import thunk from "redux-thunk";
 
 //reducer
 import item3Reducer from "./item3";
+import testReducer from "./test";
 
 export const rootReducer = combineReducers({
-    item3State: item3Reducer
+    item3State: item3Reducer,
+    testState: testReducer
 });
 
 // const rootReducer = (state: any, action: any) => {

@@ -1,9 +1,12 @@
 import Layout from "@components/Layout";
-import NoSSRHandsontableWrapper from "@components/NoSSRHandsontable";
+import NoSSRHandsontable from "@components/NoSSRHandsontable";
 import { verifyAuth } from "@lib/server/verifyAuth";
 import { Button, Container, createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
+import { wrapper } from "@store/index";
+import { ServerInitDataAction } from "@store/test/MyHandsontable/action";
 import { GetServerSideProps } from "next";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useRef } from "react";
+//
 
 const useStyles = () =>
     makeStyles((theme: Theme) =>
@@ -30,6 +33,13 @@ interface PropsType {
 }
 
 const MyHandsontable = ({ data }: PropsType): ReactElement => {
+    const hotRef = useRef(null);
+
+    React.useEffect(() => {
+        return () => {
+            console.log(hotRef.current.hotInstance.getData());
+        };
+    });
     //styles
     const classes = useStyles()();
     return (
@@ -37,18 +47,24 @@ const MyHandsontable = ({ data }: PropsType): ReactElement => {
             <Grid container className={classes.gridContainer}>
                 <Grid container item xs={12} className={classes.toolBar} alignItems="center">
                     <Grid item>
-                        <Button variant="outlined">Save</Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                console.log(hotRef.current.hotInstance.getData());
+                            }}>
+                            Save
+                        </Button>
                     </Grid>
                 </Grid>
                 <Grid item xs={12} className={classes.Hot}>
-                    <NoSSRHandsontableWrapper data={data}></NoSSRHandsontableWrapper>
+                    <NoSSRHandsontable data={data} ref={hotRef}></NoSSRHandsontable>
                 </Grid>
             </Grid>
         </Container>
     );
 };
 
-export const getServerSideProps: GetServerSideProps<PropsType> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(async (ctx) => {
     verifyAuth(ctx);
     //create data for handsontable
     const data = [
@@ -57,13 +73,15 @@ export const getServerSideProps: GetServerSideProps<PropsType> = async (ctx) => 
         ["2020", 20, 11, 14, 13],
         ["2021", 30, 15, 12, 13]
     ];
-
+    //dispatch data
+    ctx.store.dispatch(ServerInitDataAction(data));
+    //
     return {
         props: {
             data: data
         }
     };
-};
+});
 
 MyHandsontable.layout = Layout;
 
