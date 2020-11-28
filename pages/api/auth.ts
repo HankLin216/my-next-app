@@ -15,6 +15,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     };
     const conn = await mysql.createConnection(config);
 
+    // eslint-disable-next-line no-unused-vars
     const [rows, fileds] = await conn.execute<mysql.RowDataPacket[]>(
         "SELECT password FROM ms.user where `id` = ? ;",
         [account]

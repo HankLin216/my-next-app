@@ -1,4 +1,4 @@
-import { verifyAuth } from "@lib/verifyAuth";
+import { verifyAuth } from "@lib/server/verifyAuth";
 import { Container, Typography } from "@material-ui/core";
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
