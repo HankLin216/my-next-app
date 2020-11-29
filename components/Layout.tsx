@@ -86,6 +86,16 @@ const drawerItems: DrawerItems[] | never = [
                 to: "/test/MyHandsonTable2"
             }
         ]
+    },
+    {
+        Label: "Products",
+        open: false,
+        subList: [
+            {
+                Label: "Gun",
+                to: "/Products/Gun"
+            }
+        ]
     }
 ];
 //Reducer hook

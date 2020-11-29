@@ -47,6 +47,10 @@ const useStyles = () =>
         })
     );
 
+interface PropsType {
+    hasLogin: boolean;
+}
+
 const Index = ({
     hasLogin
 }: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement => {
@@ -59,26 +63,28 @@ const Index = ({
         }
     }, []);
     //method
-    const getUserAccountAfterVerify = (): ReactElement => {
+    const getUserProfile = (): ReactElement => {
         //get user account
         const userAccount = jsCookies.get("Account");
         return (
-            <Grid container direction="column" spacing={3} justify="center" alignItems="center">
-                <Grid item>
+            <Grid container spacing={3} justify="center" alignItems="center">
+                <Grid item xs={12}>
                     <Typography variant="h5">{`Hi ${userAccount}`}</Typography>
                 </Grid>
-                <Grid item>
+                <Grid item xs={12}>
                     <Typography variant="subtitle1">{`Click following botton to continue`}</Typography>
                 </Grid>
-                <Grid item>
-                    <Link href="/home" passHref>
-                        <Button variant="outlined" style={{ marginRight: "16px" }}>
-                            Start
+                <Grid item xs={12} container spacing={2} justify="center" alignItems="center">
+                    <Grid item>
+                        <Link href="/home" passHref>
+                            <Button variant="outlined">Start</Button>
+                        </Link>
+                    </Grid>
+                    <Grid item>
+                        <Button variant="outlined" onClick={handleLogout}>
+                            Logout
                         </Button>
-                    </Link>
-                    <Button variant="outlined" onClick={handleLogout}>
-                        Logout
-                    </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         );
@@ -115,7 +121,7 @@ const Index = ({
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             {login ? (
-                                getUserAccountAfterVerify()
+                                getUserProfile()
                             ) : (
                                 <Grid container justify="center" alignItems="center">
                                     <Grid item>
@@ -132,7 +138,7 @@ const Index = ({
     );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<PropsType> = async (context) => {
     let hasLogin = false;
     const verifyResponse = verifyAuth(context);
     if (verifyResponse !== undefined) {
