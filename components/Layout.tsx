@@ -37,12 +37,8 @@ interface DrawerItems {
 }
 const drawerItems: DrawerItems[] | never = [
     {
-        Label: "Item1",
-        to: "/Item1"
-    },
-    {
-        Label: "Item2",
-        to: "/Item2"
+        Label: "Home",
+        to: "/home"
     },
     {
         Label: "Item3",
@@ -59,16 +55,22 @@ const drawerItems: DrawerItems[] | never = [
         ]
     },
     {
-        Label: "Item4",
+        Label: "Management",
         open: false,
         subList: [
             {
-                Label: "subItem1",
-                to: "/Item4/subItem1"
-            },
+                Label: "Add Product",
+                to: "/Management/addProduct"
+            }
+        ]
+    },
+    {
+        Label: "Products",
+        open: false,
+        subList: [
             {
-                Label: "subItem2",
-                to: "/Item4/subItem2"
+                Label: "Gun",
+                to: "/Products/Gun"
             }
         ]
     },
@@ -87,16 +89,6 @@ const drawerItems: DrawerItems[] | never = [
             {
                 Label: "MyHandsonTable2",
                 to: "/test/MyHandsonTable2"
-            }
-        ]
-    },
-    {
-        Label: "Products",
-        open: false,
-        subList: [
-            {
-                Label: "Gun",
-                to: "/Products/Gun"
             }
         ]
     }
@@ -260,15 +252,6 @@ const Layout = (props: LayoutProps): ReactElement => {
                             <Typography variant="h6">MS</Typography>
                         </IconButton>
                     </Link>
-                    {/* homeIcon */}
-                    <div className={classes.iconButtonwrapper}>
-                        <Link href={"/home"} passHref>
-                            <IconButton color="inherit">
-                                <Home>Home</Home>
-                            </IconButton>
-                        </Link>
-                        <div className={"silder"}></div>
-                    </div>
                     {/* userIcon */}
                     <div className={classes.iconButtonwrapper}>
                         <IconButton onClick={handleUserMenuIconClick}>
