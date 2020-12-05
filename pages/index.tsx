@@ -1,9 +1,9 @@
 // import Head from "next/head";
 import Login from "@components/form/login";
+import { clearTheCookies } from "@lib/client/cookies";
 import { verifyAuth } from "@lib/server/verifyAuth";
 import { Button, Container, Grid, Theme, Typography } from "@material-ui/core/";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { VerifiedUser } from "@material-ui/icons";
 import * as jsCookies from "js-cookie";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
@@ -13,36 +13,44 @@ const useStyles = () =>
     makeStyles((theme: Theme) =>
         createStyles({
             root: {
-                height: "100%"
+                minHeight: "100%",
+                backgroundColor: theme.palette.background.default,
+                color: "#fff"
             },
             barView: {
                 width: "100%",
-                minHeight: "10vh",
-                borderBottom: "1px solid black",
-                "& #barContainer": {
-                    minHeight: "inherit",
-                    "& #barGridContainer": {
-                        minHeight: "inherit"
-                    }
-                }
+                height: "10vh"
             },
             barTitle: {
-                fontWeight: theme.typography.fontWeightBold
+                fontWeight: theme.typography.fontWeightBold,
+                padding: `0px ${theme.spacing(2)}px`
             },
             mainView: {
-                minHeight: "50vh",
-                borderBottom: "1px solid black",
+                Height: "50vh",
+                minHeight: "420px",
                 textAlign: "center",
                 "& #mainContainer": {
                     minHeight: "inherit",
                     "& #mainGridContainer": {
-                        minHeight: "inherit"
+                        minHeight: "inherit",
+                        color: "#fff"
                     }
-                }
+                },
+                backgroundImage: "url(/index.jpg)",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "top"
             },
             footerView: {
                 width: "100%",
-                minHeight: "40%"
+                minHeight: "40vh"
+            },
+            loginform: {
+                backgroundColor: "rgba(255,255,255,0.6)"
+            },
+            actionButton: {
+                width: 100,
+                backgroundColor: "rgba(0,0,0,0.4)"
             }
         })
     );
@@ -77,11 +85,20 @@ const Index = ({
                 <Grid item xs={12} container spacing={2} justify="center" alignItems="center">
                     <Grid item>
                         <Link href="/home" passHref>
-                            <Button variant="outlined">Start</Button>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                className={classes.actionButton}>
+                                Start
+                            </Button>
                         </Link>
                     </Grid>
                     <Grid item>
-                        <Button variant="outlined" onClick={handleLogout}>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleLogout}
+                            className={classes.actionButton}>
                             Logout
                         </Button>
                     </Grid>
@@ -90,26 +107,23 @@ const Index = ({
         );
     };
     const handleLogout = (): void => {
-        //get user account
-        const account = jsCookies.get("Account");
-        jsCookies.remove("Account");
-        if (account !== undefined) {
-            jsCookies.remove(account);
-        }
+        clearTheCookies();
         setLogin(false);
     };
     return (
         <Grid container justify="center" alignItems="center" className={classes.root}>
-            <Grid item xs={12} className={classes.barView}>
-                <Container id={"barContainer"}>
-                    <Grid id={"barGridContainer"} container justify="center" alignItems="center">
-                        <Grid item xs={12}>
-                            <Typography variant={"h5"} className={classes.barTitle}>
-                                MS
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Container>
+            <Grid
+                item
+                container
+                xs={12}
+                className={classes.barView}
+                justify="flex-start"
+                alignItems="center">
+                <Grid item>
+                    <Typography variant={"h5"} className={classes.barTitle}>
+                        MS
+                    </Typography>
+                </Grid>
             </Grid>
             <Grid item xs={12} className={classes.mainView}>
                 <Container id="mainContainer">
@@ -125,7 +139,9 @@ const Index = ({
                             ) : (
                                 <Grid container justify="center" alignItems="center">
                                     <Grid item>
-                                        <Login setLogin={setLogin}></Login>
+                                        <Login
+                                            setLogin={setLogin}
+                                            className={classes.loginform}></Login>
                                     </Grid>
                                 </Grid>
                             )}

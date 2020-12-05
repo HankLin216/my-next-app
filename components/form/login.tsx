@@ -36,11 +36,20 @@ const useStyles = () =>
                 "& button": {
                     width: "100%"
                 }
+            },
+            progressWrap: {
+                width: "100%",
+                position: "relative"
+            },
+            progress: {
+                width: "100%",
+                position: "absolute"
             }
         })
     );
 interface LoginPropsType {
     setLogin: Dispatch<SetStateAction<boolean>>;
+    className: string;
 }
 
 const Login = (props: LoginPropsType): ReactElement => {
@@ -96,12 +105,20 @@ const Login = (props: LoginPropsType): ReactElement => {
         }
     };
     return (
-        <Paper square elevation={5} className={classes.root} onKeyPress={handleKeyBoardPress}>
+        <Paper
+            square
+            elevation={5}
+            className={`${classes.root} ${props.className}`}
+            onKeyPress={handleKeyBoardPress}>
             <Typography variant="h5" className={classes.formTitle}>
                 Login
             </Typography>
             <Divider></Divider>
-            {isFetch ? <LinearProgress></LinearProgress> : null}
+            {isFetch ? (
+                <div className={classes.progressWrap}>
+                    <LinearProgress className={classes.progress}></LinearProgress>
+                </div>
+            ) : null}
             <Box p={2}>
                 <Grid
                     container
@@ -114,7 +131,7 @@ const Login = (props: LoginPropsType): ReactElement => {
                         <TextField
                             label="Account"
                             error={textFieldError.account ? true : false}
-                            helperText={textFieldError.account}
+                            helperText={textFieldError.account || " "}
                             inputRef={accountRef}
                             InputProps={{
                                 startAdornment: (
@@ -127,8 +144,9 @@ const Login = (props: LoginPropsType): ReactElement => {
                     <Grid item>
                         <TextField
                             label="Password"
+                            type="password"
                             error={textFieldError.password ? true : false}
-                            helperText={textFieldError.password}
+                            helperText={textFieldError.password || " "}
                             inputRef={passwordRef}
                             InputProps={{
                                 startAdornment: (
@@ -139,7 +157,7 @@ const Login = (props: LoginPropsType): ReactElement => {
                             }}></TextField>
                     </Grid>
                     <Grid item className={classes.formAction}>
-                        <Button variant="outlined" onClick={handleLoginClick}>
+                        <Button variant="outlined" color="primary" onClick={handleLoginClick}>
                             Comfirm
                         </Button>
                     </Grid>

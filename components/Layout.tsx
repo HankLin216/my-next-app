@@ -1,23 +1,26 @@
 //next
 //material
+//
+import { clearTheCookies } from "@lib/client/cookies";
 import {
     AppBar,
-    Button,
     Collapse,
     Drawer,
     IconButton,
     List,
     ListItem,
     ListItemText,
+    Menu,
+    MenuItem,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
-import { ExpandLess, ExpandMore, Home, Menu as MenuIcon } from "@material-ui/icons";
+import { AccountCircle, ExpandLess, ExpandMore, Home, Menu as MenuIcon } from "@material-ui/icons";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { MouseEvent, ReactElement, ReactNode, useReducer, useState } from "react";
-
 //initialization
 const appbarHeight = 50;
 const drawerWidth = 250;
@@ -139,7 +142,8 @@ const useStyles = (props: StyleProps) =>
             //appBar
             appBar: {
                 height: appbarHeight,
-                backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)",
+                // backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)",
+                backgroundColor: theme.palette.background.default,
                 width: props.drawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
                 transition: theme.transitions.create(["margin", "width"], {
@@ -153,11 +157,21 @@ const useStyles = (props: StyleProps) =>
             menuButton: {
                 marginRight: theme.spacing(2)
             },
-            title: {
+            buttonTitle: {
                 color: "#fff",
                 marginLeft: "auto",
                 marginRight: "auto",
                 textAlign: "center"
+            },
+            iconButtonwrapper: {
+                position: "relative",
+                "&:hover": {
+                    "& .silder": {
+                        borderBottom: "2px solid white",
+                        position: "absolute",
+                        width: "100%"
+                    }
+                }
             },
             //drawer
             drawer: {
@@ -165,6 +179,9 @@ const useStyles = (props: StyleProps) =>
                 "& .MuiDrawer-paper": {
                     width: drawerWidth
                 }
+            },
+            drawerSubListPanel: {
+                backgroundColor: theme.palette.background.default
             },
             drawerSubList: {
                 "& .MuiListItemText-root": {
@@ -175,7 +192,7 @@ const useStyles = (props: StyleProps) =>
             main: {
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
                 height: `calc(100% - ${appbarHeight}px)`,
-                transition: theme.transitions.create("margin", {
+                transition: theme.transitions.create(["margin", "width"], {
                     easing: theme.transitions.easing.easeOut,
                     duration: theme.transitions.duration.enteringScreen
                 })
@@ -191,7 +208,9 @@ const Layout = (props: LayoutProps): ReactElement => {
     //state
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [drawerItemState, dispatch] = useReducer(drawerReducer, drawerItems, initDrawerState);
-
+    const [userMenuAnchorEl, setuserMenuAnchorEl] = useState<null | HTMLElement>(null);
+    //next
+    const router = useRouter();
     //style
     const classes = useStyles({ drawerOpen })();
     //method
@@ -207,6 +226,22 @@ const Layout = (props: LayoutProps): ReactElement => {
             }
         });
     }
+    function handleUserMenuIconClick(event: MouseEvent<HTMLButtonElement>): void {
+        setuserMenuAnchorEl(event.currentTarget);
+    }
+    function handleUserMenuIconClose(): void {
+        setuserMenuAnchorEl(null);
+    }
+    function handleUserMenuItemClick(event: MouseEvent<HTMLLIElement>): void {
+        const actBtn = event.currentTarget.innerText;
+        switch (actBtn.toUpperCase()) {
+            case "LOGOUT":
+                clearTheCookies();
+                router.push("/");
+                break;
+        }
+        setuserMenuAnchorEl(null);
+    }
     return (
         <>
             {/* navigation */}
@@ -221,20 +256,39 @@ const Layout = (props: LayoutProps): ReactElement => {
                         <MenuIcon />
                     </IconButton>
                     <Link href={"/"} passHref>
-                        <Button className={classes.title}>
+                        <IconButton className={classes.buttonTitle}>
                             <Typography variant="h6">MS</Typography>
-                        </Button>
-                    </Link>
-
-                    <Link href={"/home"} passHref>
-                        <IconButton color="inherit">
-                            <Home>Home</Home>
                         </IconButton>
                     </Link>
-
-                    <Button color="inherit">Login</Button>
+                    {/* homeIcon */}
+                    <div className={classes.iconButtonwrapper}>
+                        <Link href={"/home"} passHref>
+                            <IconButton color="inherit">
+                                <Home>Home</Home>
+                            </IconButton>
+                        </Link>
+                        <div className={"silder"}></div>
+                    </div>
+                    {/* userIcon */}
+                    <div className={classes.iconButtonwrapper}>
+                        <IconButton onClick={handleUserMenuIconClick}>
+                            <AccountCircle></AccountCircle>
+                        </IconButton>
+                        <div className={"silder"}></div>
+                    </div>
                 </Toolbar>
             </AppBar>
+            {/* Menu */}
+            <Menu
+                keepMounted
+                anchorEl={userMenuAnchorEl}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                getContentAnchorEl={null}
+                open={Boolean(userMenuAnchorEl)}
+                onClose={handleUserMenuIconClose}>
+                <MenuItem onClick={handleUserMenuItemClick}>Logout</MenuItem>
+                <MenuItem onClick={handleUserMenuItemClick}>User Setting</MenuItem>
+            </Menu>
             {/* Drawer */}
             <Drawer open={drawerOpen} variant="persistent" className={classes.drawer}>
                 <List>
@@ -243,11 +297,11 @@ const Layout = (props: LayoutProps): ReactElement => {
                             <div key={item.Label}>
                                 <ListItem button onClick={handleListItemClick}>
                                     <ListItemText primary={item.Label}></ListItemText>
-
                                     {drawerItemState[item.Label] ? <ExpandLess /> : <ExpandMore />}
                                 </ListItem>
-
-                                <Collapse in={drawerItemState[item.Label]}>
+                                <Collapse
+                                    in={drawerItemState[item.Label]}
+                                    className={classes.drawerSubListPanel}>
                                     <List className={classes.drawerSubList}>
                                         {item.subList?.map((subitem) => {
                                             return (
