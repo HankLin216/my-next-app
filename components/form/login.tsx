@@ -1,5 +1,4 @@
-import { AuthResult, LoginPostData } from "@apptypes/auth";
-import { Post } from "@lib/client/fetcher";
+import { AuthResult } from "@apptypes/auth";
 import {
     Box,
     Button,
@@ -77,11 +76,18 @@ const Login = (props: LoginPropsType): ReactElement => {
         }
         //auth
         setIsFetch(true);
-        const result = await Post<LoginPostData, AuthResult>("/api/auth", {
-            account,
-            password
-        });
+        const result: AuthResult = await fetch("/api/auth", {
+            method: "POST",
+            body: JSON.stringify({
+                account,
+                password
+            })
+        })
+            .then((r) => r.json())
+            .catch((err) => ({ token: "", error: err.message }));
+
         setIsFetch(false);
+
         //check
         switch (result.error) {
             case "查無此帳號":
@@ -91,6 +97,11 @@ const Login = (props: LoginPropsType): ReactElement => {
                 setTextFieldError({ ...textFieldError, account: "", password: result.error });
                 return;
         }
+        if (result.error !== "") {
+            alert(result.error);
+            return;
+        }
+
         //set cookie
         Cookies.set("Account", account);
         Cookies.set(account, result.token);

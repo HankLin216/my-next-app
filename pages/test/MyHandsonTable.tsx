@@ -37,7 +37,7 @@ const MyHandsontable = ({ data }: PropsType): ReactElement => {
 
     React.useEffect(() => {
         return () => {
-            console.log(hotRef.current.hotInstance.getData());
+            // console.log(hotRef.current.hotInstance.getData());
         };
     });
     //styles
@@ -50,7 +50,7 @@ const MyHandsontable = ({ data }: PropsType): ReactElement => {
                         <Button
                             variant="outlined"
                             onClick={() => {
-                                console.log(hotRef.current.hotInstance.getData());
+                                // console.log(hotRef.current.hotInstance.getData());
                             }}>
                             Save
                         </Button>

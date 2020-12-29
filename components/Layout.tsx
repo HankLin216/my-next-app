@@ -17,7 +17,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
-import { AccountCircle, ExpandLess, ExpandMore, Home, Menu as MenuIcon } from "@material-ui/icons";
+import { AccountCircle, ExpandLess, ExpandMore, Menu as MenuIcon } from "@material-ui/icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { MouseEvent, ReactElement, ReactNode, useReducer, useState } from "react";
@@ -60,7 +60,7 @@ const drawerItems: DrawerItems[] | never = [
         subList: [
             {
                 Label: "Add Product",
-                to: "/Management/addProduct"
+                to: "/Management/AddProduct"
             }
         ]
     },
@@ -135,7 +135,7 @@ const useStyles = (props: StyleProps) =>
             appBar: {
                 height: appbarHeight,
                 // backgroundImage: "linear-gradient(30deg, #020024, #090979, #00d4ff)",
-                backgroundColor: theme.palette.background.default,
+                // backgroundColor: theme.palette.primary.main,
                 width: props.drawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
                 transition: theme.transitions.create(["margin", "width"], {
@@ -150,7 +150,6 @@ const useStyles = (props: StyleProps) =>
                 marginRight: theme.spacing(2)
             },
             buttonTitle: {
-                color: "#fff",
                 marginLeft: "auto",
                 marginRight: "auto",
                 textAlign: "center"
@@ -161,7 +160,8 @@ const useStyles = (props: StyleProps) =>
                     "& .silder": {
                         borderBottom: "2px solid white",
                         position: "absolute",
-                        width: "100%"
+                        width: "100%",
+                        bottom: 0.5
                     }
                 }
             },
@@ -173,7 +173,7 @@ const useStyles = (props: StyleProps) =>
                 }
             },
             drawerSubListPanel: {
-                backgroundColor: theme.palette.background.default
+                // backgroundColor: theme.palette.background.default
             },
             drawerSubList: {
                 "& .MuiListItemText-root": {
@@ -248,13 +248,13 @@ const Layout = (props: LayoutProps): ReactElement => {
                         <MenuIcon />
                     </IconButton>
                     <Link href={"/"} passHref>
-                        <IconButton className={classes.buttonTitle}>
+                        <IconButton className={classes.buttonTitle} color="inherit">
                             <Typography variant="h6">MS</Typography>
                         </IconButton>
                     </Link>
                     {/* userIcon */}
                     <div className={classes.iconButtonwrapper}>
-                        <IconButton onClick={handleUserMenuIconClick}>
+                        <IconButton onClick={handleUserMenuIconClick} color="inherit">
                             <AccountCircle></AccountCircle>
                         </IconButton>
                         <div className={"silder"}></div>

@@ -19,9 +19,9 @@ const Theme = createMuiTheme({
     // }
     spacing: 8,
     palette: {
-        type: "dark",
+        // type: "dark",
         background: {
-            light: "#424242"
+            // light: "#424242"
             // default: "#303030"
         }
     }

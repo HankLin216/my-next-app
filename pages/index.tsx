@@ -14,26 +14,28 @@ const useStyles = () =>
         createStyles({
             root: {
                 minHeight: "100%",
-                backgroundColor: theme.palette.background.default,
+                // backgroundColor: theme.palette.background.default,
                 color: "#fff"
             },
             barView: {
                 width: "100%",
-                height: "10vh"
+                height: "5vh"
             },
             barTitle: {
                 fontWeight: theme.typography.fontWeightBold,
                 padding: `0px ${theme.spacing(2)}px`
             },
             mainView: {
-                Height: "50vh",
+                height: "55vh",
                 minHeight: "420px",
                 textAlign: "center",
                 "& #mainContainer": {
+                    height: "100%",
                     minHeight: "inherit",
                     "& #mainGridContainer": {
-                        minHeight: "inherit",
-                        color: "#fff"
+                        height: "100%",
+                        minHeight: "inherit"
+                        // color: "#fff"
                     }
                 },
                 backgroundImage: "url(/index.jpg)",
@@ -111,7 +113,12 @@ const Index = ({
         setLogin(false);
     };
     return (
-        <Grid container justify="center" alignItems="center" className={classes.root}>
+        <Grid
+            container
+            justify="center"
+            alignItems="center"
+            className={classes.root}
+            alignContent={"flex-start"}>
             <Grid
                 item
                 container
