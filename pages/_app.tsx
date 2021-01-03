@@ -50,6 +50,8 @@ function WrappedApp({ Component, pageProps, router }: AppLayoutProps): ReactElem
                     name="viewport"
                     content="minimum-scale=1, initial-scale=1, width=device-width"
                 />
+                {/* for draft.js */}
+                <meta charSet="utf-8" />
             </Head>
             <ThemeProvider theme={theme}>
                 <Layout>

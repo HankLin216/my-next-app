@@ -183,7 +183,7 @@ const useStyles = (props: StyleProps) =>
             //main
             main: {
                 marginLeft: props.drawerOpen ? drawerWidth : 0,
-                height: `calc(100% - ${appbarHeight}px)`,
+                minHeight: `calc(100% - ${appbarHeight}px)`,
                 transition: theme.transitions.create(["margin", "width"], {
                     easing: theme.transitions.easing.easeOut,
                     duration: theme.transitions.duration.enteringScreen

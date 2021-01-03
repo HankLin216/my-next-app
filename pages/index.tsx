@@ -15,7 +15,7 @@ const useStyles = () =>
             root: {
                 minHeight: "100%",
                 // backgroundColor: theme.palette.background.default,
-                color: "#fff"
+                // color: "#fff"
             },
             barView: {
                 width: "100%",
@@ -28,6 +28,7 @@ const useStyles = () =>
             mainView: {
                 height: "55vh",
                 minHeight: "420px",
+                color: "#fff",
                 textAlign: "center",
                 "& #mainContainer": {
                     height: "100%",

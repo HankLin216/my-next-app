@@ -5,96 +5,137 @@ import Layout from "components/Layout";
 import { verifyAuth } from "lib/server/verifyAuth";
 import { GetServerSideProps } from "next";
 import { ReactElement, useState } from "react";
+import TextDraft from "components/TextDraft";
+
+function useBasicInfoStyles() {
+    return makeStyles((theme: Theme) =>
+        createStyles({
+            root: {
+                "& .MuiTextField-root": {
+                    width: "80%"
+                },
+                marginBottom: theme.spacing(2)
+            }
+        })
+    );
+}
+
+function BasicInfo() {
+    //state
+    const [categories, setCategories] = useState<string[]>([]);
+    //styles
+    const classes = useBasicInfoStyles()();
+    return (
+        <Paper elevation={5} square className={classes.root}>
+            <Box p={2}>
+                <Typography variant={"h5"}>基本資料</Typography>
+            </Box>
+            <Box pl={1} pr={1}>
+                <Divider></Divider>
+            </Box>
+            <Box p={3} pl={5}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="名稱"
+                            required
+                            InputLabelProps={{
+                                shrink: true
+                            }}></TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="系列"
+                            InputLabelProps={{
+                                shrink: true
+                            }}></TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="貨號"
+                            required
+                            InputLabelProps={{
+                                shrink: true
+                            }}></TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Autocomplete
+                            options={categories}
+                            renderInput={(param) => (
+                                <TextField
+                                    {...param}
+                                    required
+                                    label={"種類"}
+                                    InputLabelProps={{ shrink: true }}></TextField>
+                            )}></Autocomplete>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextDraft></TextDraft>
+                    </Grid>
+                </Grid>
+            </Box>
+        </Paper>
+    );
+}
+
+const useFactoryStlyes = () =>
+    makeStyles((theme: Theme) =>
+        createStyles({
+            root: {
+                marginBottom: theme.spacing(3)
+            }
+        })
+    );
+
+function FactoryInfo() {
+    //styles
+    const classes = useFactoryStlyes()();
+    return (
+        <Paper elevation={5} square className={classes.root}>
+            <Box p={2}>
+                <Typography variant={"h5"}>廠商資料</Typography>
+            </Box>
+            <Box pl={1} pr={1}>
+                <Divider></Divider>
+            </Box>
+            <Box p={3} pl={5}></Box>
+        </Paper>
+    );
+}
 
 const useStyles = () =>
     makeStyles((theme: Theme) =>
         createStyles({
             root: {
                 border: "1px solid red",
-                height: "100%"
+                minHeight: "100%"
             },
             aside: {
                 border: "1px solid blue",
-                height: "100%"
+                minHeight: "100%"
             },
             main: {
                 paddingTop: theme.spacing(2),
                 border: "1px solid green",
-                height: "100%"
-            },
-            basicInfo: {
-                "& .MuiTextField-root": {
-                    width: 500
-                }
-            },
-            dividerWrapper: {
-                display: "flex",
-                justifyContent: "center",
-                "& hr": {
-                    width: "98%"
-                }
+                minHeight: "100%"
             }
         })
     );
 
 const AddProduct = (): ReactElement => {
-    //state
-    const [categories, setCategories] = useState<string[]>([]);
     //style
     const classes = useStyles()();
     return (
         <Grid container className={classes.root}>
-            <Grid item container xs={10} className={classes.main} justify="center">
-                <Grid item xs={8}>
+            <Grid item container xs={9} className={classes.main} justify="center">
+                <Grid item xs={11}>
                     {/* 基本資料 */}
-                    <Paper elevation={5} square className={classes.basicInfo}>
-                        <Box p={2}>
-                            <Typography variant={"h5"}>基本資料</Typography>
-                        </Box>
-                        <div className={classes.dividerWrapper}>
-                            <Divider></Divider>
-                        </div>
-                        <Box p={3} pl={5}>
-                            <Grid container xs={12} spacing={2}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="名稱"
-                                        required
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}></TextField>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="系列"
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}></TextField>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="貨號"
-                                        required
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}></TextField>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Autocomplete
-                                        options={categories}
-                                        renderInput={(param) => (
-                                            <TextField
-                                                {...param}
-                                                label={"種類"}
-                                                InputLabelProps={{ shrink: true }}></TextField>
-                                        )}></Autocomplete>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    </Paper>
+                    <BasicInfo></BasicInfo>
+                    {/* 廠商資料 */}
+                    <FactoryInfo></FactoryInfo>
                 </Grid>
             </Grid>
-            <Grid item xs={2} className={classes.aside}>
+            <Grid item xs={3} className={classes.aside}>
                 Aside
             </Grid>
         </Grid>
