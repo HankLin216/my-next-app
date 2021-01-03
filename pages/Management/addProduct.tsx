@@ -12,7 +12,7 @@ function useBasicInfoStyles() {
         createStyles({
             root: {
                 "& .MuiTextField-root": {
-                    width: "80%"
+                    width: "65%"
                 },
                 marginBottom: theme.spacing(2)
             }
@@ -27,7 +27,7 @@ function BasicInfo() {
     const classes = useBasicInfoStyles()();
     return (
         <Paper elevation={5} square className={classes.root}>
-            <Box p={2}>
+            <Box p={1}>
                 <Typography variant={"h5"}>基本資料</Typography>
             </Box>
             <Box pl={1} pr={1}>
@@ -92,7 +92,7 @@ function FactoryInfo() {
     const classes = useFactoryStlyes()();
     return (
         <Paper elevation={5} square className={classes.root}>
-            <Box p={2}>
+            <Box p={1}>
                 <Typography variant={"h5"}>廠商資料</Typography>
             </Box>
             <Box pl={1} pr={1}>
@@ -108,16 +108,14 @@ const useStyles = () =>
         createStyles({
             root: {
                 border: "1px solid red",
-                minHeight: "100%"
+                flexGrow: 1
             },
             aside: {
-                border: "1px solid blue",
-                minHeight: "100%"
+                border: "1px solid blue"
             },
             main: {
                 paddingTop: theme.spacing(2),
-                border: "1px solid green",
-                minHeight: "100%"
+                border: "1px solid green"
             }
         })
     );

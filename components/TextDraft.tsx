@@ -14,8 +14,8 @@ function useStyles() {
             root: {
                 border: `.5px solid ${theme.palette.grey[500]}`,
                 marginTop: theme.spacing(1),
-                padding: theme.spacing(1),
-                width: "80%"
+                padding: theme.spacing(1)
+                // width: `calc(80% - ${theme.spacing(2)}px)`
             },
             title: {
                 backgroundColor: "#fff",
