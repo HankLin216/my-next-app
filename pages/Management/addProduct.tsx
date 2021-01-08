@@ -2,10 +2,11 @@ import { Box, Divider, Grid, Paper, TextField, Theme, Typography } from "@materi
 import { Autocomplete } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Layout from "components/Layout";
+import TextDraft from "components/TextDraft";
+import TextDraft2 from "components/TextDraft-example";
 import { verifyAuth } from "lib/server/verifyAuth";
 import { GetServerSideProps } from "next";
 import { ReactElement, useState } from "react";
-import TextDraft from "components/TextDraft";
 
 function useBasicInfoStyles() {
     return makeStyles((theme: Theme) =>

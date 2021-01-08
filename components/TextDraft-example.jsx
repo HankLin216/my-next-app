@@ -1,5 +1,5 @@
+import { convertFromRaw, convertToRaw, Editor, EditorState, RichUtils } from "draft-js";
 import { Component } from "react";
-import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from "draft-js";
 
 export default class App extends Component {
     constructor(props) {
@@ -181,7 +181,10 @@ export default class App extends Component {
                     style={toolbarStyle}>
                     <ToolBar editorState={editorState} onToggle={this.toggleToolbar} />
                 </div>
-                <div onClick={this.onClickEditor} onBlur={this.checkSelectedText}>
+                <div
+                    onClick={this.onClickEditor}
+                    onBlur={this.checkSelectedText}
+                    style={{ border: "1px solid red", height: 300 }}>
                     <Editor
                         customStyleMap={styleMap}
                         editorState={editorState}
