@@ -9,8 +9,6 @@ import { Router } from "next/dist/client/router";
 import Head from "next/head";
 import { ReactElement, ReactNode, useEffect } from "react";
 
-//redux
-//layout
 import Layout from "../components/Layout";
 import theme from "../material-styles/theme";
 import { wrapper } from "../store/index";

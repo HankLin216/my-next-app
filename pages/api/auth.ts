@@ -1,4 +1,5 @@
 import { LoginPostData } from "@apptypes/auth";
+import Cookies from "cookie";
 import jwt from "jsonwebtoken";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -42,7 +43,6 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     const token = jwt.sign({ Account: account }, process.env.JWT_SECRET, {
         algorithm: process.env.JWT_ALGORITHM as jwt.Algorithm
     });
-    res.statusCode = 200;
     res.json({ token, error: "" });
     return;
 };
