@@ -39,9 +39,15 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     if (!process.env.JWT_ALGORITHM) {
         throw new Error("未設定加密演算法");
     }
-    const token = jwt.sign({ Account: account }, process.env.JWT_SECRET, {
-        algorithm: process.env.JWT_ALGORITHM as jwt.Algorithm
-    });
+    let token = "";
+    try {
+        token = jwt.sign({ Account: account }, process.env.JWT_SECRET, {
+            algorithm: process.env.JWT_ALGORITHM as jwt.Algorithm
+        });
+    } catch (err) {
+        throw new Error("JWT簽章時錯誤");
+    }
+
     res.statusCode = 200;
     res.json({ token, error: "" });
     return;

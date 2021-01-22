@@ -2,11 +2,14 @@ import { Box, Divider, Grid, Paper, TextField, Theme, Typography } from "@materi
 import { Autocomplete } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Layout from "components/Layout";
-import TextDraft from "components/TextDraft";
-import TextDraft2 from "components/TextDraft-example";
 import { verifyAuth } from "lib/server/verifyAuth";
 import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 import { ReactElement, useState } from "react";
+
+const TextEditor = dynamic(() => import("components/TextEditor"), {
+    ssr: false
+});
 
 function useBasicInfoStyles() {
     return makeStyles((theme: Theme) =>
@@ -71,7 +74,7 @@ function BasicInfo() {
                             )}></Autocomplete>
                     </Grid>
                     <Grid item xs={12}>
-                        <TextDraft></TextDraft>
+                        <TextEditor></TextEditor>
                     </Grid>
                 </Grid>
             </Box>
