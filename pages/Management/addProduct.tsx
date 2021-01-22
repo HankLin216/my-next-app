@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, Paper, TextField, Theme, Typography } from "@material-ui/core";
+import { Box, Button, Divider, Grid, Paper, TextField, Theme, Typography } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import Layout from "components/Layout";
@@ -7,9 +7,15 @@ import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { ReactElement, useState } from "react";
 
-const TextEditor = dynamic(() => import("components/TextEditor"), {
-    ssr: false
-});
+const TextEditor = dynamic<Record<string, never>>(
+    () => import("components/TextEditor").then((mod) => mod.default),
+    {
+        ssr: false,
+        loading: function loading() {
+            return <p>loading...</p>;
+        }
+    }
+);
 
 function useBasicInfoStyles() {
     return makeStyles((theme: Theme) =>
@@ -74,6 +80,7 @@ function BasicInfo() {
                             )}></Autocomplete>
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography variant={"subtitle1"}>商品描述</Typography>
                         <TextEditor></TextEditor>
                     </Grid>
                 </Grid>
@@ -145,7 +152,7 @@ const AddProduct = (): ReactElement => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    verifyAuth(ctx);
+    // verifyAuth(ctx);
     return {
         props: {
             // data: null

@@ -13,7 +13,7 @@ const useStyles = () =>
     makeStyles((theme: Theme) =>
         createStyles({
             root: {
-                minHeight: "100%",
+                minHeight: "100%"
                 // backgroundColor: theme.palette.background.default,
                 // color: "#fff"
             },

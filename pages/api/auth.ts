@@ -1,4 +1,5 @@
 import { LoginPostData } from "@apptypes/auth";
+import Cookies from "cookie";
 import jwt from "jsonwebtoken";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import { NextApiRequest, NextApiResponse } from "next";
