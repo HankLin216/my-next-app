@@ -142,6 +142,7 @@ const AddProduct = (): ReactElement => {
                     <BasicInfo></BasicInfo>
                     {/* 廠商資料 */}
                     <FactoryInfo></FactoryInfo>
+                    {/* 價量資料 */}
                 </Grid>
             </Grid>
             <Grid item xs={3} className={classes.aside}>
@@ -152,7 +153,7 @@ const AddProduct = (): ReactElement => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    // verifyAuth(ctx);
+    verifyAuth(ctx);
     return {
         props: {
             // data: null
