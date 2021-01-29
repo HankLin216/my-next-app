@@ -23,8 +23,8 @@ function useBasicInfoStyles() {
             root: {
                 "& .MuiTextField-root": {
                     width: "65%"
-                },
-                marginBottom: theme.spacing(2)
+                }
+                // marginBottom: theme.spacing(2)
             }
         })
     );
@@ -93,7 +93,7 @@ const useFactoryStlyes = () =>
     makeStyles((theme: Theme) =>
         createStyles({
             root: {
-                marginBottom: theme.spacing(3)
+                // marginBottom: theme.spacing(3)
             }
         })
     );
@@ -114,6 +114,21 @@ function FactoryInfo() {
     );
 }
 
+function PriceQuantityInfo(): ReactElement {
+    return (
+        <Paper elevation={5} square>
+            <Box p={1}>
+                <Typography variant={"h5"}>價量資料</Typography>
+            </Box>
+            <Box pl={1} pr={1}>
+                <Divider></Divider>
+            </Box>
+            <Box p={3} pl={5}></Box>
+        </Paper>
+    );
+}
+
+//
 const useStyles = () =>
     makeStyles((theme: Theme) =>
         createStyles({
@@ -125,8 +140,11 @@ const useStyles = () =>
                 border: "1px solid blue"
             },
             main: {
-                paddingTop: theme.spacing(2),
-                border: "1px solid green"
+                padding: theme.spacing(2),
+                border: "1px solid green",
+                "& .MuiPaper-root": {
+                    marginBottom: theme.spacing(2)
+                }
             }
         })
     );
@@ -136,13 +154,18 @@ const AddProduct = (): ReactElement => {
     const classes = useStyles()();
     return (
         <Grid container className={classes.root}>
-            <Grid item container xs={9} className={classes.main} justify="center">
-                <Grid item xs={11}>
+            <Grid item container xs={9} className={classes.main} direction={"column"}>
+                <Grid item>
                     {/* 基本資料 */}
                     <BasicInfo></BasicInfo>
+                </Grid>
+                <Grid item>
                     {/* 廠商資料 */}
                     <FactoryInfo></FactoryInfo>
+                </Grid>
+                <Grid item>
                     {/* 價量資料 */}
+                    <PriceQuantityInfo></PriceQuantityInfo>
                 </Grid>
             </Grid>
             <Grid item xs={3} className={classes.aside}>
