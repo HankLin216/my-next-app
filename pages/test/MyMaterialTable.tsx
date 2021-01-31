@@ -1,3 +1,4 @@
+import Layout from "components/Layout";
 import MaterialTable from "material-table";
 import { useEffect, useState } from "react";
 import { ReactElement } from "react";
@@ -33,5 +34,5 @@ const MyMaterialTable = (): ReactElement => {
         </>
     );
 };
-
+MyMaterialTable.layout = Layout;
 export default MyMaterialTable;

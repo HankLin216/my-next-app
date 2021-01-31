@@ -87,8 +87,8 @@ const drawerItems: DrawerItems[] | never = [
                 to: "/test/MyHandsonTable"
             },
             {
-                Label: "MyHandsonTable2",
-                to: "/test/MyHandsonTable2"
+                Label: "ReactTable",
+                to: "/test/ReactTable"
             }
         ]
     }
