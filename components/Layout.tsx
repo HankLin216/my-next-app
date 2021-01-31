@@ -60,7 +60,7 @@ const drawerItems: DrawerItems[] | never = [
         subList: [
             {
                 Label: "Add Product",
-                to: "/Management/AddProduct"
+                to: "/Management/addProduct"
             }
         ]
     },
@@ -239,7 +239,7 @@ const Layout = (props: LayoutProps): ReactElement => {
     return (
         <>
             {/* navigation */}
-            <AppBar position="static" className={classes.appBar}>
+            <AppBar position="sticky" className={classes.appBar}>
                 <Toolbar className={classes.toolBar}>
                     <IconButton
                         edge="start"

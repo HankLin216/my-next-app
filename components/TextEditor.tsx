@@ -107,7 +107,11 @@ const useStyles = () =>
         })
     );
 
-export default function TextEditor(): ReactElement {
+export interface PropsType {
+    handleUpdateProductDescription: (value: string) => void;
+}
+
+export default function TextEditor(props: PropsType): ReactElement {
     const [value, setValue] = useState("");
     const classes = useStyles()();
     return (
@@ -120,6 +124,10 @@ export default function TextEditor(): ReactElement {
                 }}
                 value={value}
                 onChange={setValue}
+                onBlur={(previousRange, source, editor) => {
+                    // console.log(editor.getHTML()); // use this
+                    props.handleUpdateProductDescription(editor.getHTML());
+                }}
             />
         </div>
     );

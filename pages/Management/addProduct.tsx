@@ -1,21 +1,20 @@
 import { Box, Button, Divider, Grid, Paper, TextField, Theme, Typography } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/styles";
+import type { RootState } from "apptypes/redux";
 import Layout from "components/Layout";
 import { verifyAuth } from "lib/server/verifyAuth";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { ReactElement, useState } from "react";
-
-const TextEditor = dynamic<Record<string, never>>(
-    () => import("components/TextEditor").then((mod) => mod.default),
-    {
-        ssr: false,
-        loading: function loading() {
-            return <p>loading...</p>;
-        }
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import * as Actions from "store/Management/addProduct/action";
+const TextEditor = dynamic(() => import("components/TextEditor"), {
+    ssr: false,
+    loading: function loading() {
+        return <p>loading...</p>;
     }
-);
+});
 
 function useBasicInfoStyles() {
     return makeStyles((theme: Theme) =>
@@ -30,13 +29,29 @@ function useBasicInfoStyles() {
     );
 }
 
+interface BasicInfoState {
+    productDescription: string | null;
+}
 function BasicInfo() {
     //state
     const [categories, setCategories] = useState<string[]>([]);
+    //redux
+    // const state = useSelector<RootState, BasicInfoState>((s) => {
+    //     const _productDescription = s.managementState.addProductState.productDescription;
+    //     return {
+    //         productDescription: _productDescription
+    //     };
+    // }, shallowEqual);
+    const dispatch = useDispatch();
     //styles
     const classes = useBasicInfoStyles()();
+    //method
+    const handleUpdateProductDescription = (value: string) => {
+        dispatch(Actions.UpdateProductDescriptionAction(value));
+    };
+    console.log("render");
     return (
-        <Paper elevation={5} square className={classes.root}>
+        <Paper id={"basicInfo"} elevation={5} square className={classes.root}>
             <Box p={1}>
                 <Typography variant={"h5"}>基本資料</Typography>
             </Box>
@@ -81,7 +96,10 @@ function BasicInfo() {
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant={"subtitle1"}>商品描述</Typography>
-                        <TextEditor></TextEditor>
+                        <TextEditor
+                            handleUpdateProductDescription={
+                                handleUpdateProductDescription
+                            }></TextEditor>
                     </Grid>
                 </Grid>
             </Box>
@@ -93,7 +111,7 @@ const useFactoryStlyes = () =>
     makeStyles((theme: Theme) =>
         createStyles({
             root: {
-                marginBottom: theme.spacing(3)
+                marginBottom: theme.spacing(2)
             }
         })
     );
@@ -102,7 +120,7 @@ function FactoryInfo() {
     //styles
     const classes = useFactoryStlyes()();
     return (
-        <Paper elevation={5} square className={classes.root}>
+        <Paper id="factoryInfo" elevation={5} square className={classes.root}>
             <Box p={1}>
                 <Typography variant={"h5"}>廠商資料</Typography>
             </Box>
@@ -125,7 +143,7 @@ const useStyles = () =>
                 border: "1px solid blue"
             },
             main: {
-                paddingTop: theme.spacing(2),
+                padding: theme.spacing(2),
                 border: "1px solid green"
             }
         })
@@ -134,18 +152,39 @@ const useStyles = () =>
 const AddProduct = (): ReactElement => {
     //style
     const classes = useStyles()();
+    //method
+    const handleScroll2TargetAdjusted = (id: string) => {
+        if (id) {
+            const anchorEl = document.getElementById(id);
+            if (anchorEl) {
+                // anchorEl.scrollIntoView({ block: "start", behavior: "smooth" });
+                const headerHeight = 50;
+                const elPosition = anchorEl.getBoundingClientRect().top;
+                const offset = elPosition - headerHeight;
+                window.scrollTo({
+                    top: offset,
+                    behavior: "smooth"
+                });
+            }
+        }
+    };
     return (
         <Grid container className={classes.root}>
-            <Grid item container xs={9} className={classes.main} justify="center">
-                <Grid item xs={11}>
-                    {/* 基本資料 */}
-                    <BasicInfo></BasicInfo>
-                    {/* 廠商資料 */}
-                    <FactoryInfo></FactoryInfo>
-                </Grid>
+            <Grid item container xs={9} className={classes.main} direction="column">
+                {/* 基本資料 */}
+                <BasicInfo></BasicInfo>
+                {/* 廠商資料 */}
+                <FactoryInfo></FactoryInfo>
             </Grid>
-            <Grid item xs={3} className={classes.aside}>
-                Aside
+            <Grid container item xs={3} className={classes.aside} direction="column">
+                <div style={{ border: "2px solid yellow", position: "fixed" }}>
+                    <Button onClick={() => handleScroll2TargetAdjusted("basicInfo")}>
+                        基本資料
+                    </Button>
+                    <Button onClick={() => handleScroll2TargetAdjusted("factoryInfo")}>
+                        廠商資料
+                    </Button>
+                </div>
             </Grid>
         </Grid>
     );
