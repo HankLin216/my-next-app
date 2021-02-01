@@ -1,4 +1,15 @@
-import { Box, Button, Divider, Grid, Paper, TextField, Theme, Typography } from "@material-ui/core";
+import {
+    Box,
+    Button,
+    Divider,
+    Grid,
+    Paper,
+    Tab,
+    Tabs,
+    TextField,
+    Theme,
+    Typography
+} from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import type { RootState } from "apptypes/redux";
@@ -6,7 +17,7 @@ import Layout from "components/Layout";
 import { verifyAuth } from "lib/server/verifyAuth";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
-import { ReactElement, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import * as Actions from "store/Management/addProduct/action";
 const TextEditor = dynamic(() => import("components/TextEditor"), {
@@ -51,7 +62,7 @@ function BasicInfo() {
     };
     console.log("render");
     return (
-        <Paper id={"basicInfo"} elevation={5} square className={classes.root}>
+        <Paper id={"基本資料"} elevation={5} square className={classes.root}>
             <Box p={1}>
                 <Typography variant={"h5"}>基本資料</Typography>
             </Box>
@@ -120,7 +131,7 @@ function FactoryInfo() {
     //styles
     const classes = useFactoryStlyes()();
     return (
-        <Paper id="factoryInfo" elevation={5} square className={classes.root}>
+        <Paper id="廠商資料" elevation={5} square className={classes.root}>
             <Box p={1}>
                 <Typography variant={"h5"}>廠商資料</Typography>
             </Box>
@@ -134,7 +145,7 @@ function FactoryInfo() {
 
 function PriceQuantityInfo(): ReactElement {
     return (
-        <Paper elevation={5} square>
+        <Paper id="價量資料" elevation={5} square>
             <Box p={1}>
                 <Typography variant={"h5"}>價量資料</Typography>
             </Box>
@@ -157,6 +168,16 @@ const useStyles = () =>
             aside: {
                 border: "1px solid blue"
             },
+            tabWrapper: {
+                position: "fixed",
+                border: "1px solid yellow",
+                "& .MuiTabs-indicator": {
+                    left: 0
+                },
+                "& .Mui-selected": {
+                    color: "red"
+                }
+            },
             main: {
                 padding: theme.spacing(2),
                 border: "1px solid green",
@@ -168,6 +189,8 @@ const useStyles = () =>
     );
 
 const AddProduct = (): ReactElement => {
+    //state
+    const [tabValue, setTabValue] = useState<number>(0);
     //style
     const classes = useStyles()();
     //method
@@ -186,9 +209,15 @@ const AddProduct = (): ReactElement => {
             }
         }
     };
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+        const label = (event.currentTarget as HTMLDivElement).id;
+        handleScroll2TargetAdjusted(label);
+        setTabValue(newValue);
+    };
     return (
         <Grid container className={classes.root}>
-            <Grid item container xs={9} className={classes.main} direction={"column"}>
+            <Grid item container xs={10} className={classes.main} direction={"column"}>
                 <Grid item>
                     {/* 基本資料 */}
                     <BasicInfo></BasicInfo>
@@ -202,14 +231,13 @@ const AddProduct = (): ReactElement => {
                     <PriceQuantityInfo></PriceQuantityInfo>
                 </Grid>
             </Grid>
-            <Grid container item xs={3} className={classes.aside} direction="column">
-                <div style={{ border: "2px solid yellow", position: "fixed" }}>
-                    <Button onClick={() => handleScroll2TargetAdjusted("basicInfo")}>
-                        基本資料
-                    </Button>
-                    <Button onClick={() => handleScroll2TargetAdjusted("factoryInfo")}>
-                        廠商資料
-                    </Button>
+            <Grid container item xs={2} className={classes.aside} direction="column">
+                <div className={classes.tabWrapper}>
+                    <Tabs orientation="vertical" value={tabValue} onChange={handleTabChange}>
+                        {["基本資料", "廠商資料", "價量資料"].map((t) => {
+                            return <Tab id={t} key={t} label={t} disableRipple></Tab>;
+                        })}
+                    </Tabs>
                 </div>
             </Grid>
         </Grid>
