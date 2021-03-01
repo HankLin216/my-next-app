@@ -8,7 +8,7 @@ module.exports = {
             jsx: true // Enable JSX since we're using React
         }
     },
-    plugins: ["simple-import-sort"],
+    plugins: ["prettier","simple-import-sort"],
     settings: {
         react: {
             version: "detect" // Automatically detect the react version

@@ -2,19 +2,7 @@
 //material
 //
 import { clearTheCookies } from "@lib/client/cookies";
-import {
-    AppBar,
-    Collapse,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Menu,
-    MenuItem,
-    Toolbar,
-    Typography
-} from "@material-ui/core";
+import { AppBar, Collapse, Drawer, IconButton, List, ListItem, ListItemText, Menu, MenuItem, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 //icons
 import { AccountCircle, ExpandLess, ExpandMore, Menu as MenuIcon } from "@material-ui/icons";
@@ -39,20 +27,6 @@ const drawerItems: DrawerItems[] | never = [
     {
         Label: "Home",
         to: "/home"
-    },
-    {
-        Label: "Item3",
-        open: false,
-        subList: [
-            {
-                Label: "subItem1",
-                to: "/Item3/subItem1"
-            },
-            {
-                Label: "subItem2",
-                to: "/Item3/subItem2"
-            }
-        ]
     },
     {
         Label: "Management",
@@ -241,12 +215,7 @@ const Layout = (props: LayoutProps): ReactElement => {
             {/* navigation */}
             <AppBar position="sticky" className={classes.appBar}>
                 <Toolbar className={classes.toolBar}>
-                    <IconButton
-                        edge="start"
-                        className={classes.menuButton}
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={handleMenuButtonClick}>
+                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuButtonClick}>
                         <MenuIcon />
                     </IconButton>
                     <Link href={"/"} passHref>
@@ -270,7 +239,8 @@ const Layout = (props: LayoutProps): ReactElement => {
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 getContentAnchorEl={null}
                 open={Boolean(userMenuAnchorEl)}
-                onClose={handleUserMenuIconClose}>
+                onClose={handleUserMenuIconClose}
+                PaperProps={{ square: true }}>
                 <MenuItem onClick={handleUserMenuItemClick}>Logout</MenuItem>
                 <MenuItem onClick={handleUserMenuItemClick}>User Setting</MenuItem>
             </Menu>
@@ -284,19 +254,13 @@ const Layout = (props: LayoutProps): ReactElement => {
                                     <ListItemText primary={item.Label}></ListItemText>
                                     {drawerItemState[item.Label] ? <ExpandLess /> : <ExpandMore />}
                                 </ListItem>
-                                <Collapse
-                                    in={drawerItemState[item.Label]}
-                                    className={classes.drawerSubListPanel}>
+                                <Collapse in={drawerItemState[item.Label]} className={classes.drawerSubListPanel}>
                                     <List className={classes.drawerSubList}>
                                         {item.subList?.map((subitem) => {
                                             return (
-                                                <Link
-                                                    key={subitem.Label}
-                                                    href={subitem.to || "/404"}
-                                                    passHref>
+                                                <Link key={subitem.Label} href={subitem.to || "/404"} passHref>
                                                     <ListItem button component="a">
-                                                        <ListItemText
-                                                            primary={subitem.Label}></ListItemText>
+                                                        <ListItemText primary={subitem.Label}></ListItemText>
                                                     </ListItem>
                                                 </Link>
                                             );

@@ -3,12 +3,10 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunk from "redux-thunk";
 
 //reducer
-import item3Reducer from "./item3";
 import managementReducer from "./Management";
 import testReducer from "./test";
 
 export const rootReducer = combineReducers({
-    item3State: item3Reducer,
     testState: testReducer,
     managementState: managementReducer
 });
