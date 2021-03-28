@@ -13,6 +13,7 @@ import { Column, MTableHeader } from "material-table";
 import { GetResult } from "model/fetch";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
+import { resolve } from "path";
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import PropagateLoader from "react-spinners/PropagateLoader";
@@ -184,22 +185,43 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 interface PriceQuantityInfoProps {
     colorList: string[];
 }
+interface PriceQuantityReduxState {
+    PriceTableData: any[];
+    QuantityTableData: any[];
+}
 function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
     const colors = props.colorList;
     //state
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-    const [basicPrice, setBasicProce] = useState<number>(0);
+    const [basicPrice, setBasicPrice] = useState<number>(0);
     const [basicQuantity, setBasicQuantity] = useState<number>(0);
+    //redux
+    const dispatch = useDispatch();
+    const state = useSelector<RootState, PriceQuantityReduxState>((s) => {
+        return {
+            PriceTableData: s.managementState.addProductState.PriceQuantityInfoState.PriceTableData,
+            QuantityTableData: s.managementState.addProductState.PriceQuantityInfoState.QuantityTableData
+        };
+    });
     //life
     //style
     const classes = usePriceQuantityInfoStlyes()();
     //method
     function handleOnChangeColors(event: React.ChangeEvent<any>, newvalue: string[]) {
         setSelectedColors(newvalue);
+        //dispatch
+        const _pdata = getTableRowData(newvalue, selectedSizes, [], basicPrice);
+        const _qdata = getTableRowData(newvalue, selectedSizes, [], basicQuantity);
+        dispatch(Actions.UpdatePriceTableDataAction(_pdata));
+        dispatch(Actions.UpdateQuantityTableDataAction(_qdata));
     }
     function handleOnChangeSizes(event: React.ChangeEvent<any>, newvalue: string[]) {
         setSelectedSizes(newvalue);
+        const _priceTable = getTableRowData(selectedColors, newvalue, state.PriceTableData, basicPrice);
+        const _quantityTAble = getTableRowData(selectedColors, newvalue, state.QuantityTableData, basicQuantity);
+        dispatch(Actions.UpdatePriceTableDataAction(_priceTable));
+        dispatch(Actions.UpdateQuantityTableDataAction(_quantityTAble));
     }
     function handleOnChanePriceOrQuantity(event: React.ChangeEvent<HTMLInputElement>) {
         const actId = event.target.id;
@@ -214,9 +236,11 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
         switch (actId) {
             case "BasicQuantity":
                 setBasicQuantity(num);
+                dispatch(Actions.UpdateQuantityTableDataAction(getTableRowData(selectedColors, selectedSizes, state.QuantityTableData, num)));
                 break;
             case "BasicPrice":
-                setBasicProce(num);
+                setBasicPrice(num);
+                dispatch(Actions.UpdatePriceTableDataAction(getTableRowData(selectedColors, selectedSizes, state.PriceTableData, num)));
                 break;
             default:
                 break;
@@ -234,42 +258,62 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
         return tags;
     }
     function getTableColumns() {
-        const columns: Column<PriceTableRow>[] = [
-            {
-                title: "",
-                field: "none"
-            }
-        ].concat(
-            selectedSizes.map((s) => {
-                return {
-                    title: s,
-                    field: s
-                };
-            })
-        );
+        const _columns: Column<PriceTableRow>[] = selectedSizes.map((s) => {
+            return {
+                title: s,
+                field: s
+            };
+        });
+        _columns.unshift({
+            title: "",
+            field: "none",
+            editable: "never"
+        });
 
-        return columns;
+        return _columns;
     }
-    function getTableRowData(whichTableData: string): PriceTableRow[] {
-        let basicNum = 0;
-        if (whichTableData === "Price") {
-            basicNum = basicPrice;
-        } else if (whichTableData === "Quantity") {
-            basicNum = basicQuantity;
-        }
+    function getTableRowData(colors: string[], sizes: string[], refTableData: any[], basicValue: number): PriceTableRow[] {
         const tableRows = [];
-        for (let i = 0; i < selectedColors.length; i++) {
-            const currentColor = selectedColors[i];
+        for (let i = 0; i < colors.length; i++) {
+            const currentColor = colors[i];
             const tableRow: PriceTableRow = {
                 none: currentColor
             };
-            for (let j = 0; j < selectedSizes.length; j++) {
-                const currentSize = selectedSizes[j];
-                tableRow[currentSize] = basicNum;
+            for (let j = 0; j < sizes.length; j++) {
+                const currentSize = sizes[j];
+                const matchRow = refTableData.filter((r) => r["none"] === currentColor)[0];
+                let value = basicValue;
+                if (matchRow && matchRow[currentSize]) {
+                    value = matchRow[currentSize];
+                }
+                tableRow[currentSize] = value;
             }
             tableRows.push(tableRow);
         }
         return tableRows;
+    }
+    function UpdateTableRowDataByCell(newValue: number, WhichTable: string, WhichColor: string, WhichField: string) {
+        let tableData: any[] = [];
+
+        if (WhichTable === "Price") {
+            tableData = state.PriceTableData;
+        } else if (WhichTable === "Quantity") {
+            tableData = state.QuantityTableData;
+        }
+
+        const newTableData = tableData.map((r) => {
+            const _r = { ...r };
+            if (_r["none"] === WhichColor) {
+                _r[WhichField] = newValue;
+            }
+            return _r;
+        });
+
+        if (WhichTable === "Price") {
+            dispatch(Actions.UpdatePriceTableDataAction(newTableData));
+        } else if (WhichTable === "Quantity") {
+            dispatch(Actions.UpdateQuantityTableDataAction(newTableData));
+        }
     }
     return (
         <Paper id="價量資料" elevation={5} square>
@@ -355,10 +399,10 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
                         {/* price table */}
                         <Grid item>
                             <Table
-                                title={"價目表"}
+                                title={""}
                                 icons={MaterialTableIcon}
                                 columns={getTableColumns() as any}
-                                data={getTableRowData("Price")}
+                                data={state.PriceTableData}
                                 localization={{
                                     body: {
                                         emptyDataSourceMessage: "請選擇顏色與尺寸"
@@ -374,6 +418,24 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
                                 components={{
                                     Container: function getContainer(props) {
                                         return <Paper square {...props}></Paper>;
+                                    }
+                                }}
+                                cellEditable={{
+                                    onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+                                        const newNum = parseInt(newValue, 10);
+                                        const oldNum = parseInt(oldValue, 10);
+                                        // if (!Number.isNaN(newNum) && !Number.isNaN(oldNum) && newNum !== oldNum) {
+                                        // }
+                                        return new Promise((resolve, reject) => {
+                                            resolve(newNum);
+                                        }).then((newNum) =>
+                                            UpdateTableRowDataByCell(
+                                                newNum,
+                                                "Price",
+                                                (rowData as { [k: string]: string })["none"],
+                                                columnDef.field ?? ""
+                                            )
+                                        );
                                     }
                                 }}></Table>
                         </Grid>
@@ -400,7 +462,7 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
                                 title={"庫存表"}
                                 icons={MaterialTableIcon}
                                 columns={getTableColumns() as any}
-                                data={getTableRowData("Quantity")}
+                                data={state.QuantityTableData}
                                 localization={{
                                     body: {
                                         emptyDataSourceMessage: "請選擇顏色與尺寸"
@@ -591,7 +653,6 @@ const AddProduct = (props: Props): ReactElement => {
         }
 
         return () => {
-            console.log("remove");
             window.removeEventListener("scroll", handleOnScroll);
         };
     }, [tabValue]);
