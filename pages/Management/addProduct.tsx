@@ -1,8 +1,26 @@
-import { Box, Button, ButtonBase, Checkbox, Chip, Divider, Grid, Paper, Tab, Tabs, TextField, Theme, Typography } from "@material-ui/core";
+import {
+    Box,
+    Button,
+    ButtonBase,
+    Checkbox,
+    Chip,
+    Divider,
+    Grid,
+    IconButton,
+    Paper,
+    Snackbar,
+    Tab,
+    Tabs,
+    TextField,
+    Theme,
+    Typography
+} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CloseIcon from "@material-ui/icons/Close";
 import { Autocomplete } from "@material-ui/lab";
+import Alert from "@material-ui/lab/Alert";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import type { RootState } from "apptypes/redux";
 import Layout from "components/Layout";
@@ -211,8 +229,8 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
     function handleOnChangeColors(event: React.ChangeEvent<any>, newvalue: string[]) {
         setSelectedColors(newvalue);
         //dispatch
-        const _pdata = getTableRowData(newvalue, selectedSizes, [], basicPrice);
-        const _qdata = getTableRowData(newvalue, selectedSizes, [], basicQuantity);
+        const _pdata = getTableRowData(newvalue, selectedSizes, state.PriceTableData, basicPrice);
+        const _qdata = getTableRowData(newvalue, selectedSizes, state.QuantityTableData, basicQuantity);
         dispatch(Actions.UpdatePriceTableDataAction(_pdata));
         dispatch(Actions.UpdateQuantityTableDataAction(_qdata));
     }
@@ -236,11 +254,11 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
         switch (actId) {
             case "BasicQuantity":
                 setBasicQuantity(num);
-                dispatch(Actions.UpdateQuantityTableDataAction(getTableRowData(selectedColors, selectedSizes, state.QuantityTableData, num)));
+                dispatch(Actions.UpdateQuantityTableDataAction(getTableRowData(selectedColors, selectedSizes, [], num)));
                 break;
             case "BasicPrice":
                 setBasicPrice(num);
-                dispatch(Actions.UpdatePriceTableDataAction(getTableRowData(selectedColors, selectedSizes, state.PriceTableData, num)));
+                dispatch(Actions.UpdatePriceTableDataAction(getTableRowData(selectedColors, selectedSizes, [], num)));
                 break;
             default:
                 break;
@@ -279,9 +297,10 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
             const tableRow: PriceTableRow = {
                 none: currentColor
             };
+            const matchRow = refTableData.filter((r) => r["none"] === currentColor)[0];
+
             for (let j = 0; j < sizes.length; j++) {
                 const currentSize = sizes[j];
-                const matchRow = refTableData.filter((r) => r["none"] === currentColor)[0];
                 let value = basicValue;
                 if (matchRow && matchRow[currentSize]) {
                     value = matchRow[currentSize];
@@ -424,18 +443,22 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
                                     onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
                                         const newNum = parseInt(newValue, 10);
                                         const oldNum = parseInt(oldValue, 10);
-                                        // if (!Number.isNaN(newNum) && !Number.isNaN(oldNum) && newNum !== oldNum) {
-                                        // }
+
                                         return new Promise((resolve, reject) => {
-                                            resolve(newNum);
-                                        }).then((newNum) =>
-                                            UpdateTableRowDataByCell(
-                                                newNum,
-                                                "Price",
-                                                (rowData as { [k: string]: string })["none"],
-                                                columnDef.field ?? ""
-                                            )
-                                        );
+                                            if (!Number.isNaN(newNum) && !Number.isNaN(oldNum) && newNum !== oldNum) {
+                                                resolve();
+                                                setTimeout(() => {
+                                                    UpdateTableRowDataByCell(
+                                                        newNum as number,
+                                                        "Price",
+                                                        (rowData as { [k: string]: string })["none"],
+                                                        columnDef.field ?? ""
+                                                    );
+                                                }, 10);
+                                            } else {
+                                                reject();
+                                            }
+                                        });
                                     }
                                 }}></Table>
                         </Grid>
@@ -479,6 +502,28 @@ function PriceQuantityInfo(props: PriceQuantityInfoProps): ReactElement {
                                     Container: function getContainer(props) {
                                         return <Paper square {...props}></Paper>;
                                     }
+                                }}
+                                cellEditable={{
+                                    onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+                                        const newNum = parseInt(newValue, 10);
+                                        const oldNum = parseInt(oldValue, 10);
+
+                                        return new Promise((resolve, reject) => {
+                                            if (!Number.isNaN(newNum) && !Number.isNaN(oldNum) && newNum !== oldNum) {
+                                                resolve();
+                                                setTimeout(() => {
+                                                    UpdateTableRowDataByCell(
+                                                        newNum as number,
+                                                        "Quantity",
+                                                        (rowData as { [k: string]: string })["none"],
+                                                        columnDef.field ?? ""
+                                                    );
+                                                }, 10);
+                                            } else {
+                                                reject();
+                                            }
+                                        });
+                                    }
                                 }}></Table>
                         </Grid>
                     </Grid>
@@ -493,6 +538,7 @@ function useMediaInfoStyles() {
         createStyles({
             root: {},
             photoPaper: {
+                position: "relative",
                 height: 200,
                 width: 150,
                 "& img": {
@@ -504,6 +550,13 @@ function useMediaInfoStyles() {
             uploadButton: {
                 height: "inherit",
                 width: "inherit"
+            },
+            deleteIcon: {
+                position: "absolute",
+                right: 0
+            },
+            errorMessage: {
+                color: "red"
             }
         })
     );
@@ -514,7 +567,13 @@ interface PhotoInfo {
     fileURL: string;
 }
 
+interface ErrorMessage {
+    status: boolean;
+    message: string;
+}
+
 function MediaInfo(): ReactElement {
+    const [errorMessage, setErrorMessage] = useState<ErrorMessage>({ status: false, message: "" });
     const [photoList, setPhotoList] = useState<PhotoInfo[]>([]);
     //styles
     const classes = useMediaInfoStyles()();
@@ -522,8 +581,18 @@ function MediaInfo(): ReactElement {
     const handleUploadChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
         const _filelist = event.currentTarget.files;
         if (_filelist) {
-            const newPhotoList: PhotoInfo[] = [];
             const fileArray = Array.from(_filelist);
+            //check if there has same photo
+            for (const f of fileArray) {
+                for (const pi of photoList) {
+                    if (f.name === pi.file.name) {
+                        setErrorMessage({ status: true, message: "已經有相同名稱的照片被上傳!" });
+                        return;
+                    }
+                }
+            }
+            const newPhotoList: PhotoInfo[] = [];
+
             //
             for (const _f of fileArray) {
                 const photo: PhotoInfo = {
@@ -541,6 +610,22 @@ function MediaInfo(): ReactElement {
             setPhotoList(photoList.concat(newPhotoList));
         }
     };
+
+    function handleInputOnClick(event: React.MouseEvent<HTMLInputElement>) {
+        event.currentTarget.value = "";
+    }
+
+    function handleDeleteInconClick(idx: number) {
+        const preList = photoList.slice(0, idx);
+        const postList = photoList.slice(idx + 1);
+        const newList = preList.concat(postList);
+
+        setPhotoList(newList);
+    }
+
+    function handleSnackBarClosed() {
+        setErrorMessage({ ...errorMessage, status: false });
+    }
     return (
         <Paper id={"多媒體資料"} square elevation={5}>
             {/* title */}
@@ -553,13 +638,18 @@ function MediaInfo(): ReactElement {
             </Box>
             {/* context */}
             <Box p={3} pl={5}>
+                {/* photo */}
                 <Grid container spacing={2}>
                     {/* photo list */}
                     {photoList.length !== 0
-                        ? photoList.map((p) => {
+                        ? photoList.map((p, idx) => {
                               return (
                                   <Grid key={p.file.name} item>
-                                      <Paper className={classes.photoPaper} square>
+                                      {/* image */}
+                                      <Paper className={classes.photoPaper} square elevation={5}>
+                                          <IconButton size="small" className={classes.deleteIcon} onClick={() => handleDeleteInconClick(idx)}>
+                                              <CloseIcon></CloseIcon>
+                                          </IconButton>
                                           <img alt={p.file.name} src={p.fileURL}></img>
                                       </Paper>
                                   </Grid>
@@ -568,14 +658,25 @@ function MediaInfo(): ReactElement {
                         : null}
                     {/* add photo */}
                     <Grid item>
-                        <Paper className={classes.photoPaper} square>
+                        <Paper className={classes.photoPaper} square elevation={5}>
                             <ButtonBase component={"label"} className={classes.uploadButton}>
-                                <input hidden type="file" accept={"image/*"} multiple onChange={handleUploadChange}></input>
+                                <input
+                                    hidden
+                                    type="file"
+                                    accept={"image/*"}
+                                    multiple
+                                    onChange={handleUploadChange}
+                                    onClick={handleInputOnClick}></input>
                                 <AddIcon></AddIcon>
                             </ButtonBase>
                         </Paper>
                     </Grid>
                 </Grid>
+                <Snackbar open={errorMessage.status} autoHideDuration={6000} message={errorMessage.message} onClose={handleSnackBarClosed}>
+                    <Alert severity={"error"} onClose={handleSnackBarClosed}>
+                        {errorMessage.message}
+                    </Alert>
+                </Snackbar>
             </Box>
         </Paper>
     );
