@@ -13,15 +13,7 @@ Size.whitelist = fontSizes;
 Quill.register(Size, true);
 
 const Font = Quill.import("attributors/style/font");
-const fontStyle = [
-    "arial",
-    "comic-sans",
-    "courier-new",
-    "georgia",
-    "helvetica",
-    "lucida",
-    "Times New Roman"
-];
+const fontStyle = ["arial", "comic-sans", "courier-new", "georgia", "helvetica", "lucida", "Times New Roman"];
 Font.whitelist = fontStyle;
 Quill.register(Font, true);
 

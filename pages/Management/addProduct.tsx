@@ -31,11 +31,11 @@ import { Column, MTableHeader } from "material-table";
 import { GetResult } from "model/fetch";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
-import { resolve } from "path";
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import * as Actions from "store/Management/addProduct/action";
+import { BasicInfoStateInitState } from "store/Management/addProduct/reducer";
 
 function getLoadingSpinner() {
     return (
@@ -73,26 +73,51 @@ function useBasicInfoStyles() {
     );
 }
 
-interface BasicInfoState {
-    productDescription: string | null;
-}
+// type BasicInfoState = BasicInfoStateInitState;
+
 function BasicInfo() {
     //state
     const [categories, setCategories] = useState<string[]>([]);
     //redux
+    const dispatch = useDispatch();
+
     // const state = useSelector<RootState, BasicInfoState>((s) => {
-    //     const _productDescription = s.managementState.addProductState.productDescription;
+    //     const _productName = s.managementState.addProductState.BasicInfoState.productName ?? "";
+    //     const _productID = s.managementState.addProductState.BasicInfoState.productID ?? "";
+    //     const _productSeries = s.managementState.addProductState.BasicInfoState.productSeries ?? "";
+    //     const _productCategory = s.managementState.addProductState.BasicInfoState.productCategory ?? "";
+    //     const _productDescription = s.managementState.addProductState.BasicInfoState.productDescription ?? "";
     //     return {
+    //         productName: _productName,
+    //         productID: _productID,
+    //         productSeries: _productSeries,
+    //         productCategory: _productCategory,
     //         productDescription: _productDescription
     //     };
     // }, shallowEqual);
-    const dispatch = useDispatch();
     //styles
     const classes = useBasicInfoStyles()();
     //method
+    const handleUpdateProductName = (event: React.FocusEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value;
+        dispatch(Actions.UpdateProductNameAction(value));
+    };
+    const handleUpdateProductSeries = (event: React.FocusEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value;
+        dispatch(Actions.UpdateProductSeriesAction(value));
+    };
+    const handleUpdateProductID = (event: React.FocusEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value;
+        dispatch(Actions.UpdateProductIDAction(value));
+    };
+    const handleUpdateProductCategory = (event: any, newValue: string | null) => {
+        const value = newValue ?? "";
+        dispatch(Actions.UpdateProductCategoryAction(value));
+    };
     const handleUpdateProductDescription = (value: string) => {
         dispatch(Actions.UpdateProductDescriptionAction(value));
     };
+
     return (
         <Paper id={"基本資料"} elevation={5} square className={classes.root}>
             {/* title */}
@@ -110,6 +135,7 @@ function BasicInfo() {
                         <TextField
                             label="名稱"
                             required
+                            onBlur={handleUpdateProductName}
                             InputLabelProps={{
                                 shrink: true
                             }}></TextField>
@@ -117,6 +143,7 @@ function BasicInfo() {
                     <Grid item xs={12}>
                         <TextField
                             label="系列"
+                            onBlur={handleUpdateProductSeries}
                             InputLabelProps={{
                                 shrink: true
                             }}></TextField>
@@ -125,6 +152,7 @@ function BasicInfo() {
                         <TextField
                             label="貨號"
                             required
+                            onBlur={handleUpdateProductID}
                             InputLabelProps={{
                                 shrink: true
                             }}></TextField>
@@ -132,6 +160,7 @@ function BasicInfo() {
                     <Grid item xs={12}>
                         <Autocomplete
                             options={categories}
+                            onChange={handleUpdateProductCategory}
                             renderInput={(param) => (
                                 <TextField {...param} required label={"種類"} InputLabelProps={{ shrink: true }}></TextField>
                             )}></Autocomplete>

@@ -5,6 +5,10 @@ import * as Action from "./action";
 
 export class BasicInfoStateInitState {
     productDescription: string | null = null;
+    productName: string | null = null;
+    productID: string | null = null;
+    productSeries: string | null = null;
+    productCategory: string | null = null;
 }
 
 const initState = new BasicInfoStateInitState();
@@ -18,6 +22,26 @@ const basicInfoStateReducer = (state = initState, action: ActionType): BasicInfo
             return {
                 ...state,
                 productDescription: action.payload.value
+            };
+        case Action.UPDATE_PRODUCT_NAME:
+            return {
+                ...state,
+                productName: action.payload.value
+            };
+        case Action.UPDATE_PRODUCT_ID:
+            return {
+                ...state,
+                productID: action.payload.value
+            };
+        case Action.UPDATE_PRODUCT_SERIES:
+            return {
+                ...state,
+                productSeries: action.payload.value
+            };
+        case Action.UPDATE_PRODUCT_CATEGORY:
+            return {
+                ...state,
+                productCategory: action.payload.value
             };
         default:
             return { ...state };
